@@ -12,6 +12,7 @@ import {
   requiredString,
   sanitizedRichHtml,
 } from '@/lib/contentApi';
+import { NICKNAME_TAKEN_MESSAGE, isMemberNicknameTaken } from '@/lib/nicknames';
 
 function commentNickname(authUser, profile, suppliedNickname) {
   if (profile) {
@@ -84,7 +85,13 @@ export async function POST(request, { params }) {
     }
 
     const nickname = commentNickname(authResult.user, profile, body.nickname);
-    if (!profile) await assertAnonymousCommentInterval(db, authResult.user.uid);
+    if (!profile) {
+      // 화면에서도 검사하지만 API를 직접 호출해 우회할 수 있으므로 서버에서 다시 막는다.
+      if (await isMemberNicknameTaken(db, nickname)) {
+        throw new ContentApiError(409, NICKNAME_TAKEN_MESSAGE);
+      }
+      await assertAnonymousCommentInterval(db, authResult.user.uid);
+    }
     const isRich = !parentId;
     const content = isRich
       ? sanitizedRichHtml(body.content, CONTENT_LIMITS.commentHtml)
