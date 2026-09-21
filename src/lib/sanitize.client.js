@@ -5,7 +5,9 @@ import DOMPurify from 'dompurify';
 import {
   ALLOWED_TAGS,
   DOMPURIFY_ALLOWED_ATTRIBUTES,
+  isAllowedClassName,
   isAllowedStyleDeclaration,
+  isEditorOnlyClassName,
 } from './sanitizePolicy.js';
 
 const SANITIZE_OPTIONS = {
@@ -31,6 +33,17 @@ function getPurifier() {
       }
       if (node.tagName === 'IMG') {
         node.setAttribute('loading', 'lazy');
+      }
+      if (node.hasAttribute('class')) {
+        const names = (node.getAttribute('class') || '').split(/\s+/).filter(Boolean);
+        const allowedNames = names.filter(isAllowedClassName);
+
+        if (activeSanitizeReport
+          && names.some((name) => !isAllowedClassName(name) && !isEditorOnlyClassName(name))) {
+          activeSanitizeReport.classWasFiltered = true;
+        }
+        if (allowedNames.length) node.setAttribute('class', allowedNames.join(' '));
+        else node.removeAttribute('class');
       }
       if (node.hasAttribute('style')) {
         const original = node.getAttribute('style') || '';
@@ -84,11 +97,11 @@ export function sanitizeHtml(html) {
 export function sanitizeHtmlForStorage(html) {
   if (!html) return { html: '', removedUnsafeContent: false };
 
-  const report = { removedCount: 0, styleWasFiltered: false };
+  const report = { removedCount: 0, styleWasFiltered: false, classWasFiltered: false };
   const sanitized = sanitize(html, report);
   return {
     html: sanitized,
-    removedUnsafeContent: report.removedCount > 0 || report.styleWasFiltered,
+    removedUnsafeContent: report.removedCount > 0 || report.styleWasFiltered || report.classWasFiltered,
   };
 }
 

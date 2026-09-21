@@ -146,3 +146,42 @@ test('removes encoded and whitespace-obfuscated executable URLs', () => {
   assert.match(result.html, /whitespace link/);
   assert.equal(result.removedUnsafeContent, true);
 });
+
+test('strips arbitrary class names that could overlay the page', () => {
+  const input = [
+    '<div class="fixed inset-0 z-50 bg-white">FAKE LOGIN</div>',
+    '<div class="modal-overlay">overlay</div>',
+    '<p class="nav-mobile-overlay img-md">mixed</p>',
+  ].join('');
+
+  const result = sanitizeHtmlForStorage(input);
+
+  assert.doesNotMatch(result.html, /fixed|inset-0|z-50|modal-overlay|nav-mobile-overlay/);
+  assert.match(result.html, /FAKE LOGIN/);
+  assert.match(result.html, /<p class="img-md">mixed<\/p>/);
+  assert.equal(result.removedUnsafeContent, true);
+});
+
+test('keeps the class names produced by the editor', () => {
+  const input = [
+    '<p class="ql-align-center">가운데</p>',
+    '<ul><li class="ql-indent-1">들여쓰기</li></ul>',
+    '<p><img src="https://example.com/a.jpg" alt="" class="img-lg"></p>',
+  ].join('');
+
+  const result = sanitizeHtmlForStorage(input);
+
+  assert.match(result.html, /class="ql-align-center"/);
+  assert.match(result.html, /<li class="ql-indent-1">/);
+  assert.match(result.html, /class="img-lg"/);
+  assert.equal(result.removedUnsafeContent, false);
+});
+
+test('silently drops the editor-only is-selected class', () => {
+  const input = '<p><img src="https://example.com/a.jpg" alt="" class="img-md is-selected"></p>';
+  const result = sanitizeHtmlForStorage(input);
+
+  assert.match(result.html, /class="img-md"/);
+  assert.doesNotMatch(result.html, /is-selected/);
+  assert.equal(result.removedUnsafeContent, false);
+});
