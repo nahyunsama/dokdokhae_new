@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { getAdminDb, getAdminMessaging } from '@/lib/firebaseAdmin';
 
@@ -23,9 +24,22 @@ async function sendToAll(messaging, db, title, body, url = '/') {
   return result.successCount;
 }
 
+// Vercel Cron은 CRON_SECRET이 설정돼 있으면 `Authorization: Bearer <CRON_SECRET>`을 붙여 호출한다.
+// CRON_SECRET이 없을 때 `Bearer undefined`와 비교해 통과되는 일이 없도록 미설정이면 모두 거부한다.
+function isAuthorizedCronRequest(request) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    console.error('CRON_SECRET is not configured; rejecting cron request');
+    return false;
+  }
+
+  const expected = Buffer.from(`Bearer ${secret}`);
+  const actual = Buffer.from(request.headers.get('authorization') || '');
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
 export async function GET(request) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCronRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
@@ -65,6 +79,7 @@ export async function GET(request) {
 
     return NextResponse.json({ success: true, date: todayStr, sent: totalSent, log });
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error('cron failed', e);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
