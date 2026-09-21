@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, use } from 'react';
-import { doc, getDoc, collection, getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, deleteDoc, query, orderBy, where, limit } from 'firebase/firestore';
 import { signInAnonymously } from 'firebase/auth';
 import { db, auth } from '@/lib/firebase';
 import { useAuth } from '@/lib/AuthContext';
@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 
 import { dangerousHtml } from '@/lib/sanitize.client';
 import { authenticatedFetch, authenticatedJsonFetch } from '@/lib/authenticatedFetch';
+import { NICKNAME_TAKEN_MESSAGE } from '@/lib/nicknames';
 import ContentLightbox from '@/components/ContentLightbox';
 import ExpandableContent from '@/components/ExpandableContent';
 import { ArrowLeft, Calendar, CalendarDays, ScrollText, PenLine, Bot, MessageCircle, CornerDownRight } from 'lucide-react';
@@ -71,6 +72,16 @@ export default function FeaturedDetailPage({ params }) {
       if (!nickname || nickname.length < NICKNAME_MIN || nickname.length > NICKNAME_MAX) {
         alert(`닉네임을 ${NICKNAME_MIN}~${NICKNAME_MAX}자로 입력해주세요.`);
         return;
+      }
+      // 회원 닉네임과 겹치면 익명 계정을 만들기 전에 막는다. (서버 API도 같은 검사를 다시 한다.)
+      try {
+        const taken = await getDocs(query(collection(db, 'users'), where('nickname', '==', nickname), limit(1)));
+        if (!taken.empty) {
+          alert(NICKNAME_TAKEN_MESSAGE);
+          return;
+        }
+      } catch (error) {
+        console.error('nickname check failed', error);
       }
     }
     try {
