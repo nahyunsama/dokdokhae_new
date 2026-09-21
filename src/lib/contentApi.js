@@ -9,6 +9,10 @@ export const CONTENT_LIMITS = {
   memberNickname: 12,
   nickname: 20,
   documentId: 256,
+  // AI 생성 API 프롬프트에 들어가는 입력
+  bookAuthor: 200,
+  bookDescription: 5_000,
+  aiExcerpt: 5_000,
 };
 
 export class ContentApiError extends Error {
