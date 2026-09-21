@@ -40,8 +40,10 @@ export default function LoginPage() {
       const nicknameSnap = await getDocs(query(collection(db, 'users'), where('nickname', '==', nickname.trim())));
       if (!nicknameSnap.empty) { setError('이미 사용 중인 닉네임이에요.'); setLoading(false); return; }
       const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      // users 문서는 누구나 읽을 수 있으므로 이메일 같은 개인정보는 저장하지 않는다.
+      // 이메일은 Firebase Auth(user.email)에서 가져온다.
       await setDoc(doc(db, 'users', cred.user.uid), {
-        nickname: nickname.trim(), email, createdAt: serverTimestamp()
+        nickname: nickname.trim(), createdAt: serverTimestamp()
       });
       router.push('/');
     } catch (e) {
