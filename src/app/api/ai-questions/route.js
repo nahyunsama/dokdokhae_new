@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server';
+import { requireAdminUser } from '@/lib/firebaseAdmin';
+import {
+  CONTENT_LIMITS,
+  contentApiErrorResponse,
+  optionalString,
+  readJsonBody,
+  requiredString,
+} from '@/lib/contentApi';
 
 export async function POST(request) {
   try {
-    const { title, author, description } = await request.json();
-    if (!title) return NextResponse.json({ error: '책 제목이 필요합니다.' }, { status: 400 });
+    const authResult = await requireAdminUser(request);
+    if (authResult.response) return authResult.response;
+
+    const body = await readJsonBody(request);
+    // 관리자 전용이지만 계정 탈취 등에 대비해 프롬프트에 들어가는 입력 크기를 제한한다.
+    const title = requiredString(body.title, 'title', CONTENT_LIMITS.title);
+    const author = optionalString(body.author, 'author', CONTENT_LIMITS.bookAuthor);
+    const description = optionalString(body.description, 'description', CONTENT_LIMITS.bookDescription);
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
@@ -40,7 +54,7 @@ ${description ? `책 소개: ${description}` : ''}
     const questions = text.split('\n').map(q => q.trim()).filter(q => q.length > 0).slice(0, 5);
 
     return NextResponse.json({ questions });
-  } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (error) {
+    return contentApiErrorResponse(error, 'generate ai questions');
   }
 }

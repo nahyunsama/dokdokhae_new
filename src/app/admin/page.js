@@ -154,7 +154,7 @@ export default function AdminPage() {
     setAiQLoading(true);
     setAiQResults([]);
     try {
-      const res = await fetch('/api/ai-questions', {
+      const res = await authenticatedFetch('/api/ai-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: book.title, author: book.author, description: book.description }),
@@ -299,7 +299,7 @@ export default function AdminPage() {
     }
     setAiPassageLoading(true);
     try {
-      const res = await fetch('/api/ai-passage', {
+      const res = await authenticatedFetch('/api/ai-passage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

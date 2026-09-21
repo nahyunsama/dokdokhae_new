@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
+import { requireAdminUser } from '@/lib/firebaseAdmin';
+import {
+  CONTENT_LIMITS,
+  ContentApiError,
+  contentApiErrorResponse,
+  optionalString,
+  readJsonBody,
+  requiredString,
+} from '@/lib/contentApi';
 
 export async function POST(request) {
   try {
+    const authResult = await requireAdminUser(request);
+    if (authResult.response) return authResult.response;
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
@@ -10,26 +22,19 @@ export async function POST(request) {
       );
     }
 
-    const body = await request.json().catch(() => ({}));
-    const { kind, bookTitle, bookAuthor, bookDescription = '', excerpt = '' } = body;
+    const body = await readJsonBody(request);
+    const { kind } = body;
 
     if (kind !== 'curator_intro' && kind !== 'public_domain') {
-      return NextResponse.json(
-        { error: 'kind는 curator_intro 또는 public_domain이어야 합니다.' },
-        { status: 400 }
-      );
+      throw new ContentApiError(400, 'kind는 curator_intro 또는 public_domain이어야 합니다.');
     }
-    if (!bookTitle || !bookAuthor) {
-      return NextResponse.json(
-        { error: '책 제목(bookTitle)과 저자(bookAuthor)가 필요합니다.' },
-        { status: 400 }
-      );
-    }
-    if (kind === 'public_domain' && !excerpt.trim()) {
-      return NextResponse.json(
-        { error: 'public_domain 모드는 원문 발췌(excerpt)가 필요합니다.' },
-        { status: 400 }
-      );
+    // 관리자 전용이지만 계정 탈취 등에 대비해 프롬프트에 들어가는 입력 크기를 제한한다.
+    const bookTitle = requiredString(body.bookTitle, 'bookTitle', CONTENT_LIMITS.title);
+    const bookAuthor = requiredString(body.bookAuthor, 'bookAuthor', CONTENT_LIMITS.bookAuthor);
+    const bookDescription = optionalString(body.bookDescription, 'bookDescription', CONTENT_LIMITS.bookDescription);
+    const excerpt = optionalString(body.excerpt, 'excerpt', CONTENT_LIMITS.aiExcerpt);
+    if (kind === 'public_domain' && !excerpt) {
+      throw new ContentApiError(400, 'public_domain 모드는 원문 발췌(excerpt)가 필요합니다.');
     }
 
     const Anthropic = (await import('@anthropic-ai/sdk')).default;
@@ -111,7 +116,7 @@ ${excerpt}
       .filter(q => q.length > 0);
 
     return NextResponse.json({ curatorNote, questions });
-  } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (error) {
+    return contentApiErrorResponse(error, 'generate ai passage');
   }
 }
