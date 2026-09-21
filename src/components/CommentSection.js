@@ -4,6 +4,17 @@ import { useAuth } from '@/lib/AuthContext';
 import { useComments } from '@/lib/usePostInteractions';
 import ExpandableContent from '@/components/ExpandableContent';
 
+// 댓글 최대 글자 수. 서버 API의 댓글 제한(5,000자)과 같은 값이다.
+const COMMENT_MAX_LENGTH = 5000;
+
+// 글자 수가 넘으면 안내하고 false를 반환한다. (입력한 내용은 지우지 않는다.)
+function checkCommentLength(text) {
+  const length = text.trim().length;
+  if (length <= COMMENT_MAX_LENGTH) return true;
+  alert(`댓글이 너무 깁니다. 최대 ${COMMENT_MAX_LENGTH.toLocaleString('ko-KR')}자까지 입력할 수 있어요. (현재 ${length.toLocaleString('ko-KR')}자)`);
+  return false;
+}
+
 export default function CommentSection({ collectionName, postId, isAdmin = false }) {
   const { user, profile } = useAuth();
   const {
@@ -17,6 +28,7 @@ export default function CommentSection({ collectionName, postId, isAdmin = false
 
   async function handleAddTop() {
     if (!commentText.trim() || !user) return;
+    if (!checkCommentLength(commentText)) return;
     await addComment({
       content: commentText, nickname: profile?.nickname || '익명', uid: user.uid, parentId: null,
     });
@@ -24,6 +36,7 @@ export default function CommentSection({ collectionName, postId, isAdmin = false
   }
   async function handleAddReply(parentId) {
     if (!replyText.trim() || !user) return;
+    if (!checkCommentLength(replyText)) return;
     await addComment({
       content: replyText, nickname: profile?.nickname || '익명', uid: user.uid, parentId,
     });
@@ -31,6 +44,7 @@ export default function CommentSection({ collectionName, postId, isAdmin = false
   }
   async function handleSaveEdit(commentId) {
     if (!editText.trim()) return;
+    if (!checkCommentLength(editText)) return;
     await editComment(commentId, editText.trim());
     setEditCommentId(null); setEditText('');
   }
