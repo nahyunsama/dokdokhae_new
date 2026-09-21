@@ -8,8 +8,11 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // 익명 로그인 계정은 로그인한 것으로 취급하지 않는다.
+    // (익명 로그인은 더 이상 사용하지 않으며, 이전에 만들어진 계정의 쓰기를 차단)
     function isSignedIn() {
-      return request.auth != null;
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
     }
 
     function isAdmin() {

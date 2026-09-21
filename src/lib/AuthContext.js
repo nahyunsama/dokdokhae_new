@@ -9,7 +9,6 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [anonymousUser, setAnonymousUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,12 +28,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (u && u.isAnonymous) {
-        // 익명 사용자는 user에서 분리 — 기존 회원 전용 페이지 회귀 방지
+        // 익명 로그인은 더 이상 사용하지 않는다. 이전 방문에서 브라우저에 남아 있는
+        // 익명 세션은 로그아웃 상태로 취급하고 정리한다.
         setUser(null);
         setProfile(null);
-        setAnonymousUser(u);
+        signOut(auth).catch(() => {});
       } else {
-        setAnonymousUser(null);
         setUser(u);
         if (u) {
           await refreshProfile(u.uid);
@@ -66,7 +65,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, anonymousUser, profile, loading, logout, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

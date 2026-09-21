@@ -1,24 +1,21 @@
 # TODO
 
-## 익명 사용자 클린업 자동화
+## 익명 로그인 제거 후속 작업
 
-**상태**: 대기 (익명 사용자 누적 후 구현)
+**상태**: 코드 제거 완료. 아래 운영 작업이 남아 있음.
 
-**배경**: 이주의 글/이달의 글 비회원 댓글 기능에서 `signInAnonymously` 사용. 익명 계정이 Firebase Auth에 누적됨.
+**배경**: 운영자 승인이 필요한 독서모임이라 비회원 댓글(익명 로그인)을 없앰. 이주의 글/이달의 글 댓글은 회원만 작성 가능.
+서버(`requireAuthenticatedUser`)와 Firestore 규칙(`isSignedIn`)은 이전에 만들어진 익명 계정도 거부한다.
 
-**시점**: Firebase Console → Authentication에서 익명 사용자가 100명 이상 쌓였을 때
+### 운영 작업
 
-### 작업 내용
-
-- [ ] `src/app/api/cron/route.js`에 익명 사용자 삭제 로직 추가
-  - `getAuth().listUsers()`로 익명 사용자 조회
-  - 30일 이상 경과한 익명 계정 `auth.deleteUsers()`로 일괄 삭제
-  - 결과를 `log` 배열에 추가
-- [ ] 외부 스케줄러(cron-job.org, Vercel Cron, GitHub Actions)에서 매일 `/api/cron` 호출 확인
-  - 헤더: `Authorization: Bearer ${CRON_SECRET}`
-- [ ] Firebase Console → Authentication → Sign-in method → Anonymous 활성화 확인
+- [ ] Firebase Console → Authentication → Sign-in method → **Anonymous 비활성화**
+  - 화면 코드를 지워도 공개 웹 API 키로 익명 계정을 만들 수 있으므로 반드시 필요
+- [ ] `firestore.rules` 배포 (`firebase deploy --only firestore:rules`, Vercel로는 배포되지 않음)
+- [ ] 기존 익명 계정 일괄 삭제 (Firebase Console → Authentication → Users 에서 선택 삭제,
+  많으면 Admin SDK `listUsers()` + `deleteUsers()` 일회성 실행)
+  - 새 익명 계정이 더 이상 생기지 않으므로 `/api/cron` 자동 정리는 필요 없음
 
 ### 참고
 
-- 기존 `/api/cron/route.js`는 `firebase-admin` 사용, `getAuth()` 추가 import만 필요
-- 수동 삭제: Firebase Console → Authentication → Users → 익명 사용자 선택 삭제
+- 기존 익명 댓글(`isAnonymous: true`)은 그대로 남고 "비회원" 배지로 표시됨. 수정·삭제는 관리자만 가능

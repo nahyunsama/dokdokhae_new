@@ -9,33 +9,9 @@ import {
   getUserProfile,
   readJsonBody,
   requiredString,
+  requireProfile,
   sanitizedRichHtml,
 } from '@/lib/contentApi';
-
-function commentNickname(authUser, profile, suppliedNickname) {
-  if (profile) {
-    try {
-      return requiredString(
-        profile.nickname,
-        'profile nickname',
-        CONTENT_LIMITS.memberNickname,
-      );
-    } catch {
-      throw new ContentApiError(403, 'A valid user profile is required');
-    }
-  }
-
-  const provider = authUser.firebase?.sign_in_provider;
-  if (provider !== 'anonymous') {
-    throw new ContentApiError(403, 'A valid user profile is required');
-  }
-
-  const nickname = requiredString(suppliedNickname, 'nickname', CONTENT_LIMITS.nickname);
-  if (nickname.length < 2) {
-    throw new ContentApiError(400, 'nickname must be at least 2 characters');
-  }
-  return nickname;
-}
 
 export async function POST(request, { params }) {
   try {
@@ -64,7 +40,7 @@ export async function POST(request, { params }) {
       }
     }
 
-    const nickname = commentNickname(authResult.user, profile, body.nickname);
+    const { nickname } = requireProfile(profile);
     const isRich = !parentId;
     const content = isRich
       ? sanitizedRichHtml(body.content, CONTENT_LIMITS.commentHtml)
@@ -79,7 +55,6 @@ export async function POST(request, { params }) {
       uid: authResult.user.uid,
       parentId,
       isRich,
-      ...(profile ? {} : { isAnonymous: true }),
       createdAt: FieldValue.serverTimestamp(),
     });
 
