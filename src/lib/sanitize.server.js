@@ -3,9 +3,25 @@ import 'server-only';
 import sanitizeHtmlLibrary from 'sanitize-html';
 import {
   ALLOWED_ATTRIBUTES,
+  ALLOWED_CLASS_PATTERNS,
   ALLOWED_STYLE_RULES,
   ALLOWED_TAGS,
+  isEditorOnlyClassName,
 } from './sanitizePolicy.js';
+
+// removedUnsafeContent 비교용 정규화에서 에디터 전용 class(is-selected)를 미리 빼 둔다.
+// 그래야 이미지를 선택한 채 저장해도 "안전하지 않은 내용 제거" 안내가 뜨지 않는다.
+function dropEditorOnlyClasses(tagName, attributes) {
+  if (!attributes.class) return { tagName, attribs: attributes };
+  const kept = attributes.class.split(/\s+/).filter((name) => name && !isEditorOnlyClassName(name));
+  // 결과 문자열과 비교하므로 속성 순서를 그대로 유지한다.
+  const attribs = {};
+  for (const [key, value] of Object.entries(attributes)) {
+    if (key !== 'class') attribs[key] = value;
+    else if (kept.length) attribs[key] = kept.join(' ');
+  }
+  return { tagName, attribs };
+}
 
 const ATTRIBUTE_TRANSFORMS = {
   a(tagName, attributes) {
@@ -32,6 +48,9 @@ const ATTRIBUTE_TRANSFORMS = {
 const SANITIZE_OPTIONS = {
   allowedTags: ALLOWED_TAGS,
   allowedAttributes: ALLOWED_ATTRIBUTES,
+  allowedClasses: {
+    '*': ALLOWED_CLASS_PATTERNS,
+  },
   allowedStyles: {
     '*': ALLOWED_STYLE_RULES,
   },
@@ -47,7 +66,7 @@ const NORMALIZE_OPTIONS = {
   allowedSchemesAppliedToAttributes: [],
   allowVulnerableTags: true,
   enforceHtmlBoundary: true,
-  transformTags: ATTRIBUTE_TRANSFORMS,
+  transformTags: { ...ATTRIBUTE_TRANSFORMS, '*': dropEditorOnlyClasses },
 };
 
 export function sanitizeHtml(html) {
