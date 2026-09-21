@@ -6,6 +6,7 @@ import {
   ContentApiError,
   assertOwnerOrAdmin,
   contentApiErrorResponse,
+  contentTooLongMessage,
   documentId,
   getUserProfile,
   readJsonBody,
@@ -40,7 +41,9 @@ export async function PATCH(request, { params }) {
     const content = isRich
       ? sanitizedRichHtml(body.content, CONTENT_LIMITS.commentHtml)
       : {
-          html: requiredString(body.content, 'content', CONTENT_LIMITS.commentHtml),
+          html: requiredString(body.content, 'content', CONTENT_LIMITS.commentHtml, {
+            tooLongMessage: contentTooLongMessage(CONTENT_LIMITS.commentHtml),
+          }),
           removedUnsafeContent: false,
         };
     await ref.update({
