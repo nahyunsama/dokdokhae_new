@@ -19,7 +19,9 @@ export function getAdminMessaging() {
   return getMessaging(getAdminApp());
 }
 
-export async function requireAuthenticatedUser(request) {
+// 익명 계정은 기본적으로 거부한다. 비회원 댓글처럼 익명을 허용하기로 한 API만
+// { allowAnonymous: true }로 호출한다.
+export async function requireAuthenticatedUser(request, { allowAnonymous = false } = {}) {
   const authorization = request.headers.get('authorization') || '';
   const [scheme, idToken] = authorization.split(' ');
 
@@ -38,8 +40,7 @@ export async function requireAuthenticatedUser(request) {
     };
   }
 
-  // 익명 로그인은 더 이상 사용하지 않는다. 이전에 만들어진 익명 계정의 토큰은 거부한다.
-  if (user.firebase?.sign_in_provider === 'anonymous') {
+  if (!allowAnonymous && user.firebase?.sign_in_provider === 'anonymous') {
     return {
       response: NextResponse.json({ error: 'Anonymous accounts are not allowed' }, { status: 403 }),
     };

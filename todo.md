@@ -1,21 +1,36 @@
 # TODO
 
-## 익명 로그인 제거 후속 작업
+## 비회원 댓글(익명 로그인) 운영 작업
 
-**상태**: 코드 제거 완료. 아래 운영 작업이 남아 있음.
+**정책**: 이주의 글/이달의 글은 비회원도 댓글을 쓸 수 있음. 익명 로그인은 이 기능에만 사용한다.
 
-**배경**: 운영자 승인이 필요한 독서모임이라 비회원 댓글(익명 로그인)을 없앰. 이주의 글/이달의 글 댓글은 회원만 작성 가능.
-서버(`requireAuthenticatedUser`)와 Firestore 규칙(`isSignedIn`)은 이전에 만들어진 익명 계정도 거부한다.
+**동작**
+- 페이지를 보기만 해서는 익명 계정을 만들지 않는다. 댓글 등록을 누르는 시점에만 `signInAnonymously` 호출
+- 익명 토큰은 이주의 글 댓글 API(작성/수정)에서만 허용 (`requireAuthenticatedUser(request, { allowAnonymous: true })`).
+  다른 API와 Firestore 규칙(`isSignedIn`)은 익명을 거부한다. 예외는 이주의 글 댓글 삭제 규칙 하나뿐
+- 비회원 댓글은 계정당 15초 간격 제한 (`assertAnonymousCommentInterval`)
+- 비회원 댓글은 알림(`/api/notify`)을 보내지 않는다. 알림 API가 회원 전용이기 때문
 
 ### 운영 작업
 
-- [ ] Firebase Console → Authentication → Sign-in method → **Anonymous 비활성화**
-  - 화면 코드를 지워도 공개 웹 API 키로 익명 계정을 만들 수 있으므로 반드시 필요
+- [ ] Firebase Console → Authentication → Sign-in method → **Anonymous 활성화** (비활성화 상태라면)
 - [ ] `firestore.rules` 배포 (`firebase deploy --only firestore:rules`, Vercel로는 배포되지 않음)
-- [ ] 기존 익명 계정 일괄 삭제 (Firebase Console → Authentication → Users 에서 선택 삭제,
-  많으면 Admin SDK `listUsers()` + `deleteUsers()` 일회성 실행)
-  - 새 익명 계정이 더 이상 생기지 않으므로 `/api/cron` 자동 정리는 필요 없음
+- [ ] 오래된 익명 계정 정리 자동화 (아래)
+
+### 익명 계정 정리 자동화
+
+**상태**: 대기 (익명 계정이 누적된 뒤 구현)
+
+댓글을 쓴 비회원만 계정이 생기지만 시간이 지나면 Firebase Auth에 계속 쌓인다.
+익명 계정이 100명 이상 쌓였을 때 구현한다.
+
+- [ ] `src/app/api/cron/route.js`에 익명 사용자 삭제 로직 추가
+  - `getAuth().listUsers()`로 조회, 이메일·로그인 제공자가 없고 Firestore `users/{uid}` 문서가 없는 계정만 대상
+  - 30일 이상 경과한 계정을 `auth.deleteUsers()`로 일괄 삭제
+  - 결과를 `log` 배열에 추가
+- [ ] 스케줄러가 매일 `/api/cron`을 호출하는지 확인 (`Authorization: Bearer ${CRON_SECRET}`)
 
 ### 참고
 
-- 기존 익명 댓글(`isAnonymous: true`)은 그대로 남고 "비회원" 배지로 표시됨. 수정·삭제는 관리자만 가능
+- 익명 계정을 삭제해도 그 계정이 쓴 댓글 문서는 남는다. 다만 작성자는 자기 댓글을 수정·삭제할 수 없게 되고 관리자만 가능
+- 수동 삭제: Firebase Console → Authentication → Users → 익명 사용자 선택 삭제
