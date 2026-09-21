@@ -190,7 +190,9 @@ service cloud.firestore {
         allow create, update: if false;
 
         // 삭제는 현재 브라우저에서 직접 수행
-        allow delete: if isOwner(resource.data.uid)
+        // 비회원(익명) 작성자도 자기 댓글을 삭제할 수 있어야 하므로 isOwner 대신
+        // (익명을 제외하는 isSignedIn을 거치지 않고) uid만 직접 비교한다.
+        allow delete: if (request.auth != null && request.auth.uid == resource.data.uid)
           || isAdmin();
       }
     }

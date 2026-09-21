@@ -9,13 +9,55 @@ import {
   getUserProfile,
   readJsonBody,
   requiredString,
-  requireProfile,
   sanitizedRichHtml,
 } from '@/lib/contentApi';
 
+function commentNickname(authUser, profile, suppliedNickname) {
+  if (profile) {
+    try {
+      return requiredString(
+        profile.nickname,
+        'profile nickname',
+        CONTENT_LIMITS.memberNickname,
+      );
+    } catch {
+      throw new ContentApiError(403, 'A valid user profile is required');
+    }
+  }
+
+  const provider = authUser.firebase?.sign_in_provider;
+  if (provider !== 'anonymous') {
+    throw new ContentApiError(403, 'A valid user profile is required');
+  }
+
+  const nickname = requiredString(suppliedNickname, 'nickname', CONTENT_LIMITS.nickname);
+  if (nickname.length < 2) {
+    throw new ContentApiError(400, 'nickname must be at least 2 characters');
+  }
+  return nickname;
+}
+
+const ANONYMOUS_COMMENT_INTERVAL_MS = 15_000;
+
+// 비회원은 계정을 새로 만들어 우회할 수 있어 완전한 방어는 아니지만,
+// 한 계정이 짧은 간격으로 연속 등록하는 것은 막는다.
+// (comments 컬렉션 그룹의 uid + createdAt 인덱스를 사용: firestore.indexes.json)
+async function assertAnonymousCommentInterval(db, uid) {
+  const snap = await db.collectionGroup('comments')
+    .where('uid', '==', uid)
+    .orderBy('createdAt', 'desc')
+    .limit(1)
+    .get();
+  const lastMs = snap.docs[0]?.data().createdAt?.toMillis?.();
+  if (lastMs && Date.now() - lastMs < ANONYMOUS_COMMENT_INTERVAL_MS) {
+    throw new ContentApiError(429, '댓글은 잠시 후에 다시 등록할 수 있어요.');
+  }
+}
+
 export async function POST(request, { params }) {
   try {
-    const authResult = await requireAuthenticatedUser(request);
+    // 비회원 댓글을 허용하는 API. 익명 계정은 이 API에서만 통과시킨다.
+    const authResult = await requireAuthenticatedUser(request, { allowAnonymous: true });
     if (authResult.response) return authResult.response;
 
     const { id: rawId } = await params;
@@ -40,7 +82,8 @@ export async function POST(request, { params }) {
       }
     }
 
-    const { nickname } = requireProfile(profile);
+    const nickname = commentNickname(authResult.user, profile, body.nickname);
+    if (!profile) await assertAnonymousCommentInterval(db, authResult.user.uid);
     const isRich = !parentId;
     const content = isRich
       ? sanitizedRichHtml(body.content, CONTENT_LIMITS.commentHtml)
@@ -55,6 +98,7 @@ export async function POST(request, { params }) {
       uid: authResult.user.uid,
       parentId,
       isRich,
+      ...(profile ? {} : { isAnonymous: true }),
       createdAt: FieldValue.serverTimestamp(),
     });
 

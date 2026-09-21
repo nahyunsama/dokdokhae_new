@@ -15,7 +15,9 @@ import {
 
 export async function PATCH(request, { params }) {
   try {
-    const authResult = await requireAuthenticatedUser(request);
+    // 비회원(익명) 작성자가 자기 댓글을 수정할 수 있도록 익명을 허용한다.
+    // 소유자/관리자 확인은 아래 assertOwnerOrAdmin에서 수행한다.
+    const authResult = await requireAuthenticatedUser(request, { allowAnonymous: true });
     if (authResult.response) return authResult.response;
 
     const { id: rawPassageId, commentId: rawCommentId } = await params;
