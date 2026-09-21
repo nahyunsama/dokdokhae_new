@@ -36,6 +36,97 @@ service cloud.firestore {
         .hasOnly(['likeCount']);
     }
 
+    // 닉네임: 1~12자 문자열 (가입·마이페이지 화면과 서버 API의 제한과 동일)
+    function validNickname(nickname) {
+      return nickname is string
+        && nickname.size() >= 1
+        && nickname.size() <= 12;
+    }
+
+    // 댓글 본문: 1~5000자 (서버 API의 댓글 제한과 동일)
+    function validCommentContent(content) {
+      return content is string
+        && content.size() >= 1
+        && content.size() <= 5000;
+    }
+
+    // ---- 좋아요 ----
+    // 게시글/서평의 likeCount 변경과 likes 문서의 생성·삭제는 같은 요청(트랜잭션)에서
+    // 짝을 맞춰서만 허용한다. 좋아요 수를 마음대로 바꾸거나, 좋아요 문서만 지워서
+    // 수를 부풀리는 것을 막는다.
+    // coll: 'board' 또는 'reviews'
+
+    // 게시글 쪽: 내 좋아요 문서가 새로 생기면 +1, 사라지면 -1 (0 아래로는 내려가지 않음)
+    function validLikeToggle(coll, postId) {
+      let like = /databases/$(database)/documents/$(coll)/$(postId)/likes/$(request.auth.uid);
+      let before = resource.data.get('likeCount', 0);
+      let after = request.resource.data.likeCount;
+      return isSignedIn()
+        && onlyLikeCountChanged()
+        && after is int
+        && (
+          (!exists(like) && existsAfter(like) && after == before + 1)
+          || (exists(like) && !existsAfter(like)
+              && ((before > 0 && after == before - 1) || (before == 0 && after == 0)))
+        );
+    }
+
+    // likes 문서 쪽: 게시글의 likeCount가 같은 요청에서 함께 바뀔 때만 허용
+    function likeCountBefore(coll, postId) {
+      return get(/databases/$(database)/documents/$(coll)/$(postId)).data.get('likeCount', 0);
+    }
+
+    function likeCountAfter(coll, postId) {
+      return getAfter(/databases/$(database)/documents/$(coll)/$(postId)).data.get('likeCount', 0);
+    }
+
+    function validLikeCreate(coll, postId, uid) {
+      return isOwner(uid)
+        && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.createdAt == request.time
+        && likeCountAfter(coll, postId) == likeCountBefore(coll, postId) + 1;
+    }
+
+    function validLikeDelete(coll, postId, uid) {
+      let before = likeCountBefore(coll, postId);
+      return isOwner(uid)
+        && (
+          (before > 0 && likeCountAfter(coll, postId) == before - 1)
+          || (before == 0 && likeCountAfter(coll, postId) == 0)
+        );
+    }
+
+    // ---- 게시글/서평 댓글 ----
+    // 새 댓글: 정해진 필드만, 내 uid와 내 프로필 닉네임으로, 서버 시각으로 작성.
+    // 답글(parentId)은 존재하는 최상위 댓글에만 달 수 있다.
+    function validNewComment(coll, postId) {
+      let d = request.resource.data;
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/$(coll)/$(postId))
+        && d.keys().hasOnly(['content', 'nickname', 'uid', 'parentId', 'createdAt'])
+        && d.keys().hasAll(['content', 'nickname', 'uid', 'parentId', 'createdAt'])
+        && d.uid == request.auth.uid
+        && validCommentContent(d.content)
+        && d.nickname == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.nickname
+        && (
+          d.parentId == null
+          || (d.parentId is string
+              && get(/databases/$(database)/documents/$(coll)/$(postId)/comments/$(d.parentId))
+                   .data.get('parentId', null) == null)
+        )
+        && d.createdAt == request.time;
+    }
+
+    // 댓글 수정: 내용과 수정 시각만 바꿀 수 있다. (uid, nickname, parentId, createdAt 변경 불가)
+    function validCommentEdit() {
+      let d = request.resource.data;
+      return d.diff(resource.data).affectedKeys().hasOnly(['content', 'updatedAt'])
+        && validCommentContent(d.content)
+        && d.updatedAt == request.time;
+    }
+
     // 사용자 프로필
     match /users/{uid} {
       allow read: if true;
@@ -44,14 +135,18 @@ service cloud.firestore {
       // 허용한 필드(nickname, createdAt) 외에는 저장할 수 없다.
       // (email 등 개인정보 저장 및 role 지정 차단)
       allow create: if isOwner(uid)
-        && request.resource.data.keys().hasOnly(['nickname', 'createdAt']);
+        && request.resource.data.keys().hasOnly(['nickname', 'createdAt'])
+        && request.resource.data.keys().hasAll(['nickname', 'createdAt'])
+        && validNickname(request.resource.data.nickname)
+        && request.resource.data.createdAt == request.time;
 
       // 브라우저에서는 닉네임만 수정 가능
       allow update: if isOwner(uid)
         && request.resource.data
           .diff(resource.data)
           .affectedKeys()
-          .hasOnly(['nickname']);
+          .hasOnly(['nickname'])
+        && validNickname(request.resource.data.nickname);
 
       allow delete: if isAdmin();
 
@@ -73,7 +168,8 @@ service cloud.firestore {
           && request.resource.data
             .diff(resource.data)
             .affectedKeys()
-            .hasOnly(['read']);
+            .hasOnly(['read'])
+          && request.resource.data.read is bool;
       }
     }
 
@@ -84,10 +180,9 @@ service cloud.firestore {
       // 생성은 Next.js API에서만 수행
       allow create: if false;
 
-      // 브라우저에서는 좋아요 수만 수정 가능
+      // 브라우저에서는 좋아요 수만 수정 가능 (좋아요 문서와 짝이 맞아야 함)
       // 게시글 본문 수정은 Next.js API에서 수행
-      allow update: if isSignedIn()
-        && onlyLikeCountChanged();
+      allow update: if validLikeToggle('board', postId);
 
       // 삭제는 현재 브라우저에서 직접 수행
       allow delete: if isOwner(resource.data.uid)
@@ -95,17 +190,20 @@ service cloud.firestore {
 
       match /likes/{uid} {
         allow read: if true;
-        allow create, delete: if isOwner(uid);
+        allow create: if validLikeCreate('board', postId, uid);
+        allow delete: if validLikeDelete('board', postId, uid);
       }
 
       // 일반 댓글은 React가 문자열로 출력하는 일반 텍스트
       match /comments/{commentId} {
         allow read: if true;
 
-        allow create: if isSignedIn()
-          && request.resource.data.uid == request.auth.uid;
+        allow create: if validNewComment('board', postId);
 
-        allow update, delete: if isOwner(resource.data.uid)
+        allow update: if (isOwner(resource.data.uid) || isAdmin())
+          && validCommentEdit();
+
+        allow delete: if isOwner(resource.data.uid)
           || isAdmin();
       }
     }
@@ -123,10 +221,9 @@ service cloud.firestore {
       // 생성은 Next.js API에서만 수행
       allow create: if false;
 
-      // 브라우저에서는 좋아요 수만 수정 가능
+      // 브라우저에서는 좋아요 수만 수정 가능 (좋아요 문서와 짝이 맞아야 함)
       // 서평 본문 수정은 Next.js API에서 수행
-      allow update: if isSignedIn()
-        && onlyLikeCountChanged();
+      allow update: if validLikeToggle('reviews', reviewId);
 
       // 삭제는 현재 브라우저에서 직접 수행
       allow delete: if isOwner(resource.data.uid)
@@ -134,17 +231,20 @@ service cloud.firestore {
 
       match /likes/{uid} {
         allow read: if true;
-        allow create, delete: if isOwner(uid);
+        allow create: if validLikeCreate('reviews', reviewId, uid);
+        allow delete: if validLikeDelete('reviews', reviewId, uid);
       }
 
       // 일반 댓글
       match /comments/{commentId} {
         allow read: if true;
 
-        allow create: if isSignedIn()
-          && request.resource.data.uid == request.auth.uid;
+        allow create: if validNewComment('reviews', reviewId);
 
-        allow update, delete: if isOwner(resource.data.uid)
+        allow update: if (isOwner(resource.data.uid) || isAdmin())
+          && validCommentEdit();
+
+        allow delete: if isOwner(resource.data.uid)
           || isAdmin();
       }
     }
