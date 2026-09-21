@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // 로그인한 회원만 업로드할 수 있다. 익명 로그인 계정은 회원으로 취급하지 않는다.
+    // (익명 계정은 웹 API 키만 있으면 누구나 만들 수 있다.)
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // 이미지 파일만, 10MB 미만. 컨텐츠 타입은 클라이언트가 선언한 값이므로
+    // SVG 등 스크립트를 담을 수 있는 형식은 허용 목록에서 제외한다.
+    function isSmallImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|gif|webp)')
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // 앱이 업로드하는 폴더는 board/, reviews/, notices/ 세 곳뿐이다.
+    // - 읽기: 파일 하나를 가져오는 것(get)만 공개. 목록 조회(list)는 막는다.
+    // - 쓰기: 새 파일 생성(create)만 허용. 수정(덮어쓰기)과 삭제는 규칙을 적지 않아 거부된다.
+    //   (앱은 삭제·수정을 하지 않는다. 필요하면 콘솔이나 Admin SDK로 처리)
+    // - 그 밖의 경로는 모두 거부된다.
+    match /{folder}/{fileName=**} {
+      allow get: if folder in ['board', 'reviews', 'notices'];
+      allow list: if false;
+      allow create: if folder in ['board', 'reviews', 'notices']
+        && isMember()
+        && isSmallImage();
+    }
+  }
+}
