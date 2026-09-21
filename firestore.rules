@@ -37,9 +37,11 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if true;
 
-      // 자신의 프로필만 생성 가능하며 관리자 권한 지정은 금지
+      // 자신의 프로필만 생성 가능. users 문서는 누구나 읽을 수 있으므로
+      // 허용한 필드(nickname, createdAt) 외에는 저장할 수 없다.
+      // (email 등 개인정보 저장 및 role 지정 차단)
       allow create: if isOwner(uid)
-        && !('role' in request.resource.data);
+        && request.resource.data.keys().hasOnly(['nickname', 'createdAt']);
 
       // 브라우저에서는 닉네임만 수정 가능
       allow update: if isOwner(uid)
