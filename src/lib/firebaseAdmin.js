@@ -29,14 +29,23 @@ export async function requireAuthenticatedUser(request) {
     };
   }
 
+  let user;
   try {
-    const user = await getAuth(getAdminApp()).verifyIdToken(idToken);
-    return { user };
+    user = await getAuth(getAdminApp()).verifyIdToken(idToken);
   } catch {
     return {
       response: NextResponse.json({ error: 'Invalid authentication token' }, { status: 401 }),
     };
   }
+
+  // 익명 로그인은 더 이상 사용하지 않는다. 이전에 만들어진 익명 계정의 토큰은 거부한다.
+  if (user.firebase?.sign_in_provider === 'anonymous') {
+    return {
+      response: NextResponse.json({ error: 'Anonymous accounts are not allowed' }, { status: 403 }),
+    };
+  }
+
+  return { user };
 }
 
 export async function requireAdminUser(request) {
