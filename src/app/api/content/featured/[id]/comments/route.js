@@ -5,6 +5,7 @@ import {
   CONTENT_LIMITS,
   ContentApiError,
   contentApiErrorResponse,
+  contentTooLongMessage,
   documentId,
   getUserProfile,
   readJsonBody,
@@ -88,7 +89,9 @@ export async function POST(request, { params }) {
     const content = isRich
       ? sanitizedRichHtml(body.content, CONTENT_LIMITS.commentHtml)
       : {
-          html: requiredString(body.content, 'content', CONTENT_LIMITS.commentHtml),
+          html: requiredString(body.content, 'content', CONTENT_LIMITS.commentHtml, {
+            tooLongMessage: contentTooLongMessage(CONTENT_LIMITS.commentHtml),
+          }),
           removedUnsafeContent: false,
         };
     const ref = passageRef.collection('comments').doc();

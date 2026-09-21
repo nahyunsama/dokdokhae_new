@@ -37,7 +37,12 @@ export async function readJsonBody(request) {
   return body;
 }
 
-export function requiredString(value, field, maxLength, { trim = true } = {}) {
+// 사용자에게 그대로 보여주는 본문 길이 초과 메시지
+export function contentTooLongMessage(maxLength) {
+  return `본문이 너무 깁니다. 최대 ${maxLength.toLocaleString('ko-KR')}자까지 저장할 수 있어요.`;
+}
+
+export function requiredString(value, field, maxLength, { trim = true, tooLongMessage } = {}) {
   if (typeof value !== 'string') {
     throw new ContentApiError(400, `${field} must be a string`);
   }
@@ -45,7 +50,10 @@ export function requiredString(value, field, maxLength, { trim = true } = {}) {
   const normalized = trim ? value.trim() : value;
   if (!normalized) throw new ContentApiError(400, `${field} is required`);
   if (normalized.length > maxLength) {
-    throw new ContentApiError(400, `${field} must be ${maxLength} characters or fewer`);
+    throw new ContentApiError(
+      400,
+      tooLongMessage || `${field} must be ${maxLength} characters or fewer`,
+    );
   }
   return normalized;
 }
@@ -95,14 +103,15 @@ function isEmptyRichHtml(html) {
 }
 
 export function sanitizedRichHtml(value, maxLength = CONTENT_LIMITS.richHtml) {
-  const raw = requiredString(value, 'content', maxLength, { trim: false });
+  const tooLongMessage = contentTooLongMessage(maxLength);
+  const raw = requiredString(value, 'content', maxLength, { trim: false, tooLongMessage });
   const sanitized = sanitizeHtmlForStorage(raw);
 
   if (!sanitized.html || isEmptyRichHtml(sanitized.html)) {
     throw new ContentApiError(400, 'content has no safe content to store');
   }
   if (sanitized.html.length > maxLength) {
-    throw new ContentApiError(400, `sanitized content must be ${maxLength} characters or fewer`);
+    throw new ContentApiError(400, tooLongMessage);
   }
   return sanitized;
 }
