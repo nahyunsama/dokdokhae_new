@@ -1,0 +1,51 @@
+.dateHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.dateHeaderTitle {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.meetingCard {
+  display: flex;
+  gap: 14px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+.meetingCard[data-past] {
+  opacity: 0.6;
+}
+.dday {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 52px;
+}
+.dday[data-past] {
+  color: var(--muted);
+}
+.meetingTime {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.meetingBook {
+  font-size: 12px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.meetingNote {
+  font-size: 12px;
+  color: var(--accent2);
+  margin-top: 4px;
+}

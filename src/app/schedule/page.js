@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import NoticeBanner from '@/components/NoticeBanner';
 import MonthCalendar from '@/components/MonthCalendar';
 import { BookOpen } from 'lucide-react';
+import styles from './schedule.module.css';
 
 function formatDateTime(str) {
   if (!str) return '';
@@ -57,8 +58,8 @@ export default function SchedulePage() {
       <MonthCalendar meetings={meetings} value={selectedDate} onChange={setSelectedDate} />
 
       {selectedDate && (
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 10 }}>
-          <div style={{ fontFamily:'var(--font-serif)', fontWeight:600, color:'var(--accent)' }}>
+        <div className={styles.dateHeader}>
+          <div className={styles.dateHeaderTitle}>
             {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 일정
           </div>
           <button type="button" className="btn-sm btn-outline" onClick={() => setSelectedDate(null)}>
@@ -80,20 +81,16 @@ export default function SchedulePage() {
           const book = m.bookId ? books[m.bookId] : null;
 
           return (
-            <div key={m.id} style={{
-              display: 'flex', gap: 14, background: 'var(--card)',
-              borderRadius: 'var(--radius)', padding: 16, marginBottom: 10,
-              boxShadow: 'var(--shadow)', opacity: past ? 0.6 : 1
-            }}>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: 16, fontWeight: 700, color: past ? 'var(--muted)' : 'var(--accent)', minWidth: 52 }}>
+            <div key={m.id} className={styles.meetingCard} data-past={past || undefined}>
+              <div className={styles.dday} data-past={past || undefined}>
                 {dday}
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 3 }}>
+                <div className={styles.meetingTime}>
                   {formatDateTime(m.date)}{m.dateEnd ? ` ~ ${formatDateTime(m.dateEnd)}` : ''}
                 </div>
-                {book && <div style={{ fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}><BookOpen size={12} /> {book.title}</div>}
-                {m.note && <div style={{ fontSize: 12, color: 'var(--accent2)', marginTop: 4 }}>{m.note}</div>}
+                {book && <div className={styles.meetingBook}><BookOpen size={12} /> {book.title}</div>}
+                {m.note && <div className={styles.meetingNote}>{m.note}</div>}
               </div>
             </div>
           );
