@@ -4,6 +4,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import { Pin } from 'lucide-react';
+import styles from './notice-list.module.css';
 
 export default function NoticePage() {
   const [posts, setPosts] = useState([]);
@@ -22,11 +23,11 @@ export default function NoticePage() {
         <p className="empty-msg">공지가 없어요.</p>
       ) : (
         posts.map(p => (
-          <Link key={p.id} href={`/notice/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+          <Link key={p.id} href={`/notice/${p.id}`} className={styles.rowLink}>
             <div className={`post-card ${p.pinned ? 'pinned' : ''}`}>
-              {p.pinned && <div style={{ fontSize: 11, color: 'var(--accent2)', marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 3 }}><Pin size={11} /> 고정</div>}
-              <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{p.title}</div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>{formatDate(p.createdAt)}</div>
+              {p.pinned && <div className={styles.pinnedTag}><Pin size={11} /> 고정</div>}
+              <div className={styles.title}>{p.title}</div>
+              <div className={styles.date}>{formatDate(p.createdAt)}</div>
             </div>
           </Link>
         ))
