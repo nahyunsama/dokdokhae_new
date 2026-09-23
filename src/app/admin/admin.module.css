@@ -1,0 +1,599 @@
+/* Small internal spacing scale — composed with the structural classes
+   below (e.g. `${styles.rowBase} ${styles.mb12}`). Scoped to this one
+   page's module, not a site-wide utility system. */
+.mb6 { margin-bottom: 6px; }
+.mb8 { margin-bottom: 8px; }
+.mb10 { margin-bottom: 10px; }
+.mb12 { margin-bottom: 12px; }
+.mb14 { margin-bottom: 14px; }
+.mb16 { margin-bottom: 16px; }
+.mb20 { margin-bottom: 20px; }
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt14 { margin-top: 14px; }
+.mt20 { margin-top: 20px; }
+.flex1 { flex: 1; }
+.flex2 { flex: 2; }
+.shrink0 { flex-shrink: 0; }
+.minW0 { min-width: 0; }
+
+/* Auth gate (loading/no-user/non-admin states) */
+.authGateWrap {
+  max-width: 360px;
+  margin: 40px auto;
+}
+.authGateCard {
+  padding: 32px 24px;
+  text-align: center;
+}
+.authGateTitle {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.authGateText {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Page header + tabs */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.pageTitle {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tabBar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.tabBtn {
+  padding: 8px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  background: var(--card);
+  color: var(--muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tabBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Section shell (was sectionStyle/h3Style/listItemStyle JS consts) */
+.section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.listItemColumn {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
+}
+.listItem[data-sent] {
+  opacity: 0.5;
+}
+.listThumb {
+  height: 44px;
+  border-radius: 4px;
+}
+.listTitle {
+  font-weight: 500;
+}
+.listTitleRow {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.listSubtitle {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.listSubtitleEllipsis {
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.listActions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Generic row/field helpers reused across every tab */
+.rowBase {
+  display: flex;
+  gap: 8px;
+}
+.rowBaseCenter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.rowWrap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fieldGap {
+  margin-bottom: 8px;
+}
+.fieldGapLg {
+  margin-bottom: 12px;
+}
+.fieldCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fieldLabel {
+  font-size: 11px;
+  color: var(--muted);
+}
+.dateFieldCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.checkboxRowTight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.checkbox {
+  width: auto;
+}
+.checkboxLabel {
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.helperText {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.mutedSmall {
+  font-size: 13px;
+  color: var(--muted);
+}
+.mutedTiny {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.aiGenerateBtn {
+  width: 100%;
+  padding: 10px 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.aiGenerateBtnNoPad {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.sendBtnInner {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.accentBtn {
+  background: var(--accent);
+  color: #fff;
+}
+.accentBtnShrink {
+  background: var(--accent);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.searchBtn {
+  padding: 10px 14px;
+}
+.relatedQuestionsLabel {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.registeredListLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.editQuestionAddInput {
+  flex: 1;
+  font-size: 13px;
+}
+
+/* Search result rows (kakao/gutendex) */
+.resultRow {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.1s;
+}
+.resultRow:hover {
+  background: var(--tag-bg);
+}
+.resultRowStack {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.resultRowStack:hover {
+  background: var(--tag-bg);
+}
+.resultThumb {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.resultThumbSm {
+  width: 36px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.resultTitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+.resultMeta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.selectedPreview {
+  background: var(--tag-bg);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.selectedPreviewImg {
+  height: 50px;
+  border-radius: 4px;
+}
+.selectedPreviewText {
+  font-size: 13px;
+}
+.selectedPreviewBlock {
+  background: var(--tag-bg);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.selectedPreviewLink {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pdInfoText {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+.pdInfoIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.pdLoadingText {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Mode/segmented buttons (passage 3-way, and tab-like toggles) */
+.modeRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.modeBtn {
+  flex: 1;
+  padding: 9px 0;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  background: var(--card);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.modeBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Textareas — sizes not covered by the global default (min-height:80px) */
+.textareaH60 {
+  margin-bottom: 8px;
+  min-height: 60px;
+  font-size: 13px;
+  resize: vertical;
+}
+.textareaH60Sm {
+  margin-bottom: 8px;
+  min-height: 60px;
+  font-size: 12px;
+  resize: vertical;
+}
+.textareaH120 {
+  margin-bottom: 8px;
+  min-height: 120px;
+  resize: vertical;
+}
+.textareaH160 {
+  margin-bottom: 8px;
+  min-height: 160px;
+  resize: vertical;
+}
+
+.aiResultBox {
+  background: var(--tag-bg);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.aiResultInput {
+  flex: 1;
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.numberedRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.numberBadge {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.numberedInput {
+  flex: 1;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+.removeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--danger);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.questionRow {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.questionEditRow {
+  display: flex;
+  gap: 8px;
+}
+.questionEditInput {
+  flex: 1;
+  font-size: 13px;
+}
+.questionViewRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.questionIndex {
+  font-size: 13px;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.questionText {
+  font-size: 13px;
+  flex: 1;
+  line-height: 1.6;
+}
+
+/* Passages tab */
+.passageBadge {
+  font-size: 10px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.passageBadge[data-weekly] {
+  background: var(--accent2);
+}
+.passageBadgeMuted {
+  font-size: 10px;
+  background: var(--tag-bg);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.passageBadgeAccent {
+  font-size: 10px;
+  background: var(--tag-bg);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.passageRowHead {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.passageBookTitle {
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.passageToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.passageToggleBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+}
+.passageExcerptPreview {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.passageQuestionCount {
+  font-size: 11px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.editFormWrap {
+  width: 100%;
+}
+
+/* Prefixes tab */
+.prefixChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--tag-bg);
+  border-radius: 20px;
+  padding: 4px 10px 4px 12px;
+}
+.prefixChipText {
+  font-size: 13px;
+}
+.prefixRemoveBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--danger);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+/* Notices tab */
+.noticeEditWrap {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.pinnedLabel {
+  font-size: 13px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}

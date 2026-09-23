@@ -13,6 +13,7 @@ import {
   Volume2, Tag, Bell, PenLine, ScrollText, Pencil, Lightbulb, Download, Link2,
   CheckCircle2, Clock, Pin, Megaphone,
 } from 'lucide-react';
+import styles from './admin.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -575,27 +576,23 @@ export default function AdminPage() {
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:00`;
   };
 
-  const sectionStyle = { background: 'var(--card)', borderRadius: 'var(--radius)', padding: 18, marginBottom: 16, boxShadow: 'var(--shadow)' };
-  const h3Style = { fontSize: 15, fontWeight: 600, color: 'var(--accent)', marginBottom: 14 };
-  const listItemStyle = { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)' };
-
   if (loading) return <p className="empty-msg">로딩 중…</p>;
 
   if (!user) return (
-    <div style={{ maxWidth: 360, margin: '40px auto' }}>
-      <div className="card" style={{ padding: '32px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, color: 'var(--accent)', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><Lock size={20} /> 관리자</h2>
-        <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 16 }}>로그인이 필요해요.</p>
+    <div className={styles.authGateWrap}>
+      <div className={`card ${styles.authGateCard}`}>
+        <h2 className={styles.authGateTitle}><Lock size={20} /> 관리자</h2>
+        <p className={`${styles.authGateText} ${styles.mb16}`}>로그인이 필요해요.</p>
         <button className="btn-primary" onClick={() => router.push('/login')}>로그인하러 가기</button>
       </div>
     </div>
   );
 
   if (!isAdmin) return (
-    <div style={{ maxWidth: 360, margin: '40px auto' }}>
-      <div className="card" style={{ padding: '32px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, color: 'var(--accent)', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><Lock size={20} /> 권한 없음</h2>
-        <p style={{ fontSize: 14, color: 'var(--muted)' }}>관리자 계정으로 로그인해주세요.</p>
+    <div className={styles.authGateWrap}>
+      <div className={`card ${styles.authGateCard}`}>
+        <h2 className={styles.authGateTitle}><Lock size={20} /> 권한 없음</h2>
+        <p className={styles.authGateText}>관리자 계정으로 로그인해주세요.</p>
       </div>
     </div>
   );
@@ -612,15 +609,15 @@ export default function AdminPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}><Settings size={20} /> 관리자</h1>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}><Settings size={20} /> 관리자</h1>
       </div>
 
       {/* 탭 */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 20, overflowX: 'auto' }}>
+      <div className={styles.tabBar}>
         {TABS.map(([key, label]) => (
           <button key={key} onClick={() => setTab(key)}
-            style={{ padding: '8px 14px', border: '1.5px solid var(--line)', borderRadius: 20, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-sans)', background: tab === key ? 'var(--accent)' : 'var(--card)', color: tab === key ? '#fff' : 'var(--muted)', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            className={styles.tabBtn} data-active={tab === key || undefined}>
             {label}
           </button>
         ))}
@@ -628,48 +625,46 @@ export default function AdminPage() {
 
       {/* 책 관리 */}
       {tab === 'books' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><BookOpen size={15} /> 책 추가</h3>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><BookOpen size={15} /> 책 추가</h3>
+          <div className={`${styles.rowBase} ${styles.mb8}`}>
             <input placeholder="책 제목으로 검색…" value={bookSearch} onChange={e => setBookSearch(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && searchKakao()} style={{ flex: 1 }} />
-            <button className="btn-sm btn-outline" onClick={searchKakao} style={{ flexShrink: 0, padding: '10px 14px' }}>검색</button>
+              onKeyDown={e => e.key === 'Enter' && searchKakao()} className={styles.flex1} />
+            <button className={`btn-sm btn-outline ${styles.searchBtn}`} onClick={searchKakao}>검색</button>
           </div>
           {searchResults.map((b, i) => (
-            <div key={i} onClick={() => selectKakaoBook(b)} style={{ display: 'flex', gap: 10, padding: 8, cursor: 'pointer', borderRadius: 8, transition: 'background 0.1s' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--tag-bg)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-              {b.thumbnail && <img src={b.thumbnail} style={{ width: 40, height: 56, objectFit: 'cover', borderRadius: 4 }} />}
+            <div key={i} onClick={() => selectKakaoBook(b)} className={styles.resultRow}>
+              {b.thumbnail && <img src={b.thumbnail} className={styles.resultThumb} />}
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>{b.title}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{(b.authors||[]).join(', ')} · {b.publisher}</div>
+                <div className={styles.resultTitle}>{b.title}</div>
+                <div className={styles.resultMeta}>{(b.authors||[]).join(', ')} · {b.publisher}</div>
               </div>
             </div>
           ))}
           {newBook.title && (
-            <div style={{ background: 'var(--tag-bg)', borderRadius: 8, padding: 8, marginBottom: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
-              {newBook.cover && <img src={newBook.cover} style={{ height: 50, borderRadius: 4 }} />}
-              <span style={{ fontSize: 13 }}>{newBook.title}</span>
+            <div className={styles.selectedPreview}>
+              {newBook.cover && <img src={newBook.cover} className={styles.selectedPreviewImg} />}
+              <span className={styles.selectedPreviewText}>{newBook.title}</span>
             </div>
           )}
-          <input placeholder="제목" value={newBook.title} onChange={e => setNewBook({...newBook, title: e.target.value})} style={{ marginBottom: 8 }} />
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <input placeholder="제목" value={newBook.title} onChange={e => setNewBook({...newBook, title: e.target.value})} className={styles.fieldGap} />
+          <div className={`${styles.rowBase} ${styles.mb8}`}>
             <input placeholder="저자" value={newBook.author} onChange={e => setNewBook({...newBook, author: e.target.value})} />
             <input placeholder="장르" value={newBook.genre} onChange={e => setNewBook({...newBook, genre: e.target.value})} />
           </div>
-          <input placeholder="표지 URL" value={newBook.cover} onChange={e => setNewBook({...newBook, cover: e.target.value})} style={{ marginBottom: 8 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <input type="checkbox" id="featured" checked={newBook.featured} onChange={e => setNewBook({...newBook, featured: e.target.checked})} style={{ width: 'auto' }} />
-            <label htmlFor="featured" style={{ fontSize: 13, color: 'var(--muted)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Star size={13} fill="currentColor" /> 이 달의 책으로 설정</label>
+          <input placeholder="표지 URL" value={newBook.cover} onChange={e => setNewBook({...newBook, cover: e.target.value})} className={styles.fieldGap} />
+          <div className={styles.checkboxRow}>
+            <input type="checkbox" id="featured" checked={newBook.featured} onChange={e => setNewBook({...newBook, featured: e.target.checked})} className={styles.checkbox} />
+            <label htmlFor="featured" className={styles.checkboxLabel}><Star size={13} fill="currentColor" /> 이 달의 책으로 설정</label>
           </div>
           <button className="btn-primary" onClick={addBook}>책 추가</button>
-          <div style={{ marginTop: 14 }}>
+          <div className={styles.mt14}>
             {books.map(b => (
-              <div key={b.id} style={listItemStyle}>
-                {b.cover && <img src={b.cover} style={{ height: 44, borderRadius: 4 }} />}
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 500 }}>{b.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>{b.author} {b.featured && <>· <Star size={11} fill="currentColor" /> 이달의 책</>}</div>
+              <div key={b.id} className={styles.listItem}>
+                {b.cover && <img src={b.cover} className={styles.listThumb} />}
+                <div className={styles.flex1}>
+                  <div className={styles.listTitle}>{b.title}</div>
+                  <div className={styles.listSubtitle}>{b.author} {b.featured && <>· <Star size={11} fill="currentColor" /> 이달의 책</>}</div>
                 </div>
                 {!b.featured && <button className="btn-sm btn-outline" onClick={() => setFeatured(b.id)}>이달의 책</button>}
                 <button className="btn-sm btn-danger" onClick={() => deleteBook(b.id)}>삭제</button>
@@ -681,11 +676,11 @@ export default function AdminPage() {
 
       {/* 토론 질문 관리 */}
       {tab === 'questions' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><MessageCircle size={15} /> 책 토론 질문 관리</h3>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><MessageCircle size={15} /> 책 토론 질문 관리</h3>
 
           {/* 책 선택 */}
-          <select value={selectedBookForQ} onChange={e => { setSelectedBookForQ(e.target.value); loadBookQuestions(e.target.value); setAiQResults([]); }} style={{ marginBottom: 12 }}>
+          <select value={selectedBookForQ} onChange={e => { setSelectedBookForQ(e.target.value); loadBookQuestions(e.target.value); setAiQResults([]); }} className={styles.fieldGapLg}>
             <option value="">책을 선택하세요</option>
             {books.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
           </select>
@@ -693,52 +688,52 @@ export default function AdminPage() {
           {selectedBookForQ && (
             <>
               {/* AI 질문 생성 */}
-              <button className="btn-sm btn-outline" onClick={generateAIQuestions} disabled={aiQLoading}
-                style={{ marginBottom: 12, width: '100%', padding: '10px 0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <button onClick={generateAIQuestions} disabled={aiQLoading}
+                className={`btn-sm btn-outline ${styles.aiGenerateBtn} ${styles.mb12}`}>
                 <Bot size={14} /> {aiQLoading ? 'AI가 질문을 생성하고 있어요…' : 'AI 질문 5개 자동 생성'}
               </button>
 
               {/* AI 결과 */}
               {aiQResults.length > 0 && (
-                <div style={{ background: 'var(--tag-bg)', borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                  <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>AI가 생성한 질문 — 필요하면 직접 수정한 뒤 저장해주세요</p>
+                <div className={styles.aiResultBox}>
+                  <p className={`${styles.helperText} ${styles.mb8}`}>AI가 생성한 질문 — 필요하면 직접 수정한 뒤 저장해주세요</p>
                   {aiQResults.map((q, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                    <div key={i} className={`${styles.rowBaseCenter} ${styles.mb6}`}>
                       <input value={q} onChange={e => setAiQResults(prev => prev.map((qq, j) => j === i ? e.target.value : qq))}
-                        style={{ flex: 1, fontSize: 13, padding: '6px 10px' }} />
-                      <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff', flexShrink: 0 }} onClick={() => saveAIQuestion(q)}>저장</button>
+                        className={styles.aiResultInput} />
+                      <button className={`btn-sm ${styles.accentBtnShrink}`} onClick={() => saveAIQuestion(q)}>저장</button>
                     </div>
                   ))}
                 </div>
               )}
 
               {/* 직접 입력 */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <div className={`${styles.rowBase} ${styles.mb12}`}>
                 <input placeholder="질문을 직접 입력하세요" value={newQuestion} onChange={e => setNewQuestion(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addQuestion()} style={{ flex: 1 }} />
-                <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff', flexShrink: 0 }} onClick={addQuestion}>추가</button>
+                  onKeyDown={e => e.key === 'Enter' && addQuestion()} className={styles.flex1} />
+                <button className={`btn-sm ${styles.accentBtnShrink}`} onClick={addQuestion}>추가</button>
               </div>
 
               {/* 등록된 질문 목록 */}
               <div>
                 {bookQuestions.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'var(--muted)' }}>등록된 질문이 없어요.</p>
+                  <p className={styles.mutedSmall}>등록된 질문이 없어요.</p>
                 ) : (
                   bookQuestions.map((q, i) => (
-                    <div key={q.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--line)' }}>
+                    <div key={q.id} className={styles.questionRow}>
                       {editingQuestionId === q.id ? (
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div className={styles.questionEditRow}>
                           <input value={editQuestionText} onChange={e => setEditQuestionText(e.target.value)}
-                            style={{ flex: 1, fontSize: 13 }} onKeyDown={e => e.key === 'Enter' && saveEditQuestion(q.id)} />
-                          <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => saveEditQuestion(q.id)}>완료</button>
+                            className={styles.questionEditInput} onKeyDown={e => e.key === 'Enter' && saveEditQuestion(q.id)} />
+                          <button className={`btn-sm ${styles.accentBtn}`} onClick={() => saveEditQuestion(q.id)}>완료</button>
                           <button className="btn-sm btn-outline" onClick={() => setEditingQuestionId(null)}>취소</button>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                          <span style={{ fontSize: 13, color: 'var(--muted)', flexShrink: 0, marginTop: 2 }}>{i + 1}.</span>
-                          <span style={{ fontSize: 13, flex: 1, lineHeight: 1.6 }}>{q.question}</span>
-                          <button className="btn-sm btn-outline" onClick={() => { setEditingQuestionId(q.id); setEditQuestionText(q.question); }} style={{ flexShrink: 0 }}>수정</button>
-                          <button className="btn-sm btn-danger" onClick={() => deleteQuestion(q.id)} style={{ flexShrink: 0 }}>삭제</button>
+                        <div className={styles.questionViewRow}>
+                          <span className={styles.questionIndex}>{i + 1}.</span>
+                          <span className={styles.questionText}>{q.question}</span>
+                          <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={() => { setEditingQuestionId(q.id); setEditQuestionText(q.question); }}>수정</button>
+                          <button className={`btn-sm btn-danger ${styles.shrink0}`} onClick={() => deleteQuestion(q.id)}>삭제</button>
                         </div>
                       )}
                     </div>
@@ -752,21 +747,21 @@ export default function AdminPage() {
 
       {/* 이 주의 글 관리 */}
       {tab === 'featured' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><NotebookPen size={15} /> 이 주/달의 글 등록</h3>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><NotebookPen size={15} /> 이 주/달의 글 등록</h3>
 
           {/* 모드 선택 (3-way) */}
-          <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+          <div className={styles.modeRow}>
             {[['curator', <><PenLine size={12} /> 큐레이터 소개</>], ['pd', <><ScrollText size={12} /> 원문 발췌</>], ['manual', <><Pencil size={12} /> 직접 입력</>]].map(([key, label]) => (
               <button key={key} onClick={() => { setPassageMode(key); setNewPassage({ ...INITIAL_PASSAGE, kind: key === 'pd' ? 'public_domain' : 'curator_intro' }); setNewPassageQuestion(''); setPassageKakaoResults([]); setPassageBookSearch(''); setPdSearchResults([]); setPdSearchQuery(''); }}
-                style={{ flex: 1, padding: '9px 0', border: '1.5px solid var(--line)', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-sans)', background: passageMode === key ? 'var(--accent)' : 'var(--card)', color: passageMode === key ? '#fff' : 'var(--muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                className={styles.modeBtn} data-active={passageMode === key || undefined}>
                 {label}
               </button>
             ))}
           </div>
 
           {/* 주간/월간 선택 (공통) */}
-          <select value={newPassage.period} onChange={e => setNewPassage({...newPassage, period: e.target.value})} style={{ marginBottom: 12 }}>
+          <select value={newPassage.period} onChange={e => setNewPassage({...newPassage, period: e.target.value})} className={styles.fieldGapLg}>
             <option value="weekly">📅 주간</option>
             <option value="monthly">📆 월간</option>
           </select>
@@ -775,56 +770,53 @@ export default function AdminPage() {
           {passageMode === 'curator' && (
             <>
               {/* 책 선택 — 시스템 내 books */}
-              <select value={newPassage.bookId} onChange={e => selectPassageBookFromCollection(e.target.value)} style={{ marginBottom: 8 }}>
+              <select value={newPassage.bookId} onChange={e => selectPassageBookFromCollection(e.target.value)} className={styles.fieldGap}>
                 <option value="">시스템 내 책에서 선택</option>
                 {books.map(b => <option key={b.id} value={b.id}>{b.title}{b.author ? ` / ${b.author}` : ''}</option>)}
               </select>
               {/* 또는 카카오 검색 */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <div className={`${styles.rowBase} ${styles.mb8}`}>
                 <input placeholder="또는 책 제목으로 검색…" value={passageBookSearch} onChange={e => setPassageBookSearch(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && searchKakaoForPassage()} style={{ flex: 1 }} />
-                <button className="btn-sm btn-outline" onClick={searchKakaoForPassage} style={{ flexShrink: 0 }}>검색</button>
+                  onKeyDown={e => e.key === 'Enter' && searchKakaoForPassage()} className={styles.flex1} />
+                <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={searchKakaoForPassage}>검색</button>
               </div>
               {passageKakaoResults.map((b, i) => (
-                <div key={i} onClick={() => selectPassageKakaoBook(b)} style={{ display: 'flex', gap: 10, padding: 8, cursor: 'pointer', borderRadius: 8 }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--tag-bg)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                  {b.thumbnail && <img src={b.thumbnail} style={{ width: 36, height: 50, objectFit: 'cover', borderRadius: 4 }} />}
+                <div key={i} onClick={() => selectPassageKakaoBook(b)} className={styles.resultRow}>
+                  {b.thumbnail && <img src={b.thumbnail} className={styles.resultThumbSm} />}
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500 }}>{b.title}</div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>{(b.authors||[]).join(', ')} · {b.publisher}</div>
+                    <div className={styles.resultTitle}>{b.title}</div>
+                    <div className={styles.resultMeta}>{(b.authors||[]).join(', ')} · {b.publisher}</div>
                   </div>
                 </div>
               ))}
               {/* 선택된 책 표시 */}
               {newPassage.bookTitle && (
-                <div style={{ background: 'var(--tag-bg)', borderRadius: 8, padding: 10, marginBottom: 8, fontSize: 13 }}>
+                <div className={styles.selectedPreviewBlock}>
                   <strong>{newPassage.bookTitle}</strong>{newPassage.bookAuthor && ` / ${newPassage.bookAuthor}`}
                 </div>
               )}
               {/* 책 소개 (AI 컨텍스트) */}
               <textarea placeholder="책 소개 (AI 컨텍스트로 사용, 자동 채워짐)" value={newPassage.bookDescription}
                 onChange={e => setNewPassage({...newPassage, bookDescription: e.target.value})}
-                style={{ marginBottom: 8, minHeight: 60, fontSize: 12, resize: 'vertical' }} />
+                className={styles.textareaH60Sm} />
               {/* AI 생성 버튼 */}
-              <button className="btn-primary" onClick={generateAIPassage} disabled={aiPassageLoading || !newPassage.bookTitle}
-                style={{ marginBottom: 8, width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <button className={`btn-primary ${styles.aiGenerateBtnNoPad} ${styles.mb8}`} onClick={generateAIPassage} disabled={aiPassageLoading || !newPassage.bookTitle}>
                 <Bot size={14} /> {aiPassageLoading ? '큐레이터 코멘트 생성 중…' : '큐레이터 코멘트 + 토론 질문 생성'}
               </button>
               {/* 큐레이터 코멘트 */}
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>큐레이터 코멘트 (2문단)</p>
+              <p className={styles.helperText}>큐레이터 코멘트 (2문단)</p>
               <textarea value={newPassage.curatorNote}
                 onChange={e => setNewPassage({...newPassage, curatorNote: e.target.value, aiGeneratedNote: false})}
-                style={{ marginBottom: 8, minHeight: 120, resize: 'vertical' }} />
+                className={styles.textareaH120} />
               {/* 짧은 직접 인용 (선택) */}
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>짧은 직접 인용 (1~2문장, 선택) — 입력 시 출처 필수</p>
+              <p className={styles.helperText}>짧은 직접 인용 (1~2문장, 선택) — 입력 시 출처 필수</p>
               <textarea placeholder='예: "이 책에서 작가는 ... 라고 썼다." (큰따옴표 없이 본문만)' value={newPassage.excerpt}
                 onChange={e => setNewPassage({...newPassage, excerpt: e.target.value})}
-                style={{ marginBottom: 8, minHeight: 60, fontSize: 13, resize: 'vertical' }} />
+                className={styles.textareaH60} />
               {newPassage.excerpt && (
                 <input placeholder="출처 표기 * (예: 책 제목, 출판사, 페이지)" value={newPassage.source}
                   onChange={e => setNewPassage({...newPassage, source: e.target.value})}
-                  style={{ marginBottom: 8 }} />
+                  className={styles.fieldGap} />
               )}
             </>
           )}
@@ -832,49 +824,46 @@ export default function AdminPage() {
           {/* PD 모드 */}
           {passageMode === 'pd' && (
             <>
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 5 }}>
-                <Lightbulb size={12} style={{ flexShrink: 0, marginTop: 2 }} /> Project Gutenberg(저작권 만료 작품)에서 책을 검색합니다. 한국어 작품이 한정적이라 결과가 적을 수 있어요.
+              <p className={styles.pdInfoText}>
+                <Lightbulb size={12} className={styles.pdInfoIcon} /> Project Gutenberg(저작권 만료 작품)에서 책을 검색합니다. 한국어 작품이 한정적이라 결과가 적을 수 있어요.
               </p>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <div className={`${styles.rowBase} ${styles.mb8}`}>
                 <input placeholder="책 제목 검색…" value={pdSearchQuery} onChange={e => setPdSearchQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && searchGutendex()} style={{ flex: 1 }} />
-                <button className="btn-sm btn-outline" onClick={searchGutendex} disabled={pdSearchLoading} style={{ flexShrink: 0 }}>
+                  onKeyDown={e => e.key === 'Enter' && searchGutendex()} className={styles.flex1} />
+                <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={searchGutendex} disabled={pdSearchLoading}>
                   {pdSearchLoading ? '검색 중…' : '검색'}
                 </button>
               </div>
               {pdSearchResults.map((b) => (
-                <div key={b.id} onClick={() => selectGutendexBook(b)} style={{ padding: 8, cursor: 'pointer', borderRadius: 8 }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--tag-bg)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                  <div style={{ fontSize: 13, fontWeight: 500 }}>{b.title}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>{(b.authors||[]).join(', ')}</div>
+                <div key={b.id} onClick={() => selectGutendexBook(b)} className={styles.resultRowStack}>
+                  <div className={styles.resultTitle}>{b.title}</div>
+                  <div className={styles.resultMeta}>{(b.authors||[]).join(', ')}</div>
                 </div>
               ))}
-              {pdTextLoading && <p style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 5 }}><Download size={12} /> 본문 가져오는 중…</p>}
+              {pdTextLoading && <p className={styles.pdLoadingText}><Download size={12} /> 본문 가져오는 중…</p>}
               {newPassage.bookTitle && (
-                <div style={{ background: 'var(--tag-bg)', borderRadius: 8, padding: 10, marginBottom: 8, fontSize: 13 }}>
+                <div className={styles.selectedPreviewBlock}>
                   <strong>{newPassage.bookTitle}</strong>{newPassage.bookAuthor && ` / ${newPassage.bookAuthor}`}
                   {newPassage.sourceUrl && (
-                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4, wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div className={styles.selectedPreviewLink}>
                       <Link2 size={11} /> {newPassage.sourceUrl}
                     </div>
                   )}
                 </div>
               )}
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>발췌할 원문 * (다듬어서 저장)</p>
+              <p className={styles.helperText}>발췌할 원문 * (다듬어서 저장)</p>
               <textarea value={newPassage.excerpt}
                 onChange={e => setNewPassage({...newPassage, excerpt: e.target.value})}
-                style={{ marginBottom: 8, minHeight: 160, resize: 'vertical' }} />
-              <button className="btn-primary" onClick={generateAIPassage} disabled={aiPassageLoading || !newPassage.excerpt}
-                style={{ marginBottom: 8, width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                className={styles.textareaH160} />
+              <button className={`btn-primary ${styles.aiGenerateBtnNoPad} ${styles.mb8}`} onClick={generateAIPassage} disabled={aiPassageLoading || !newPassage.excerpt}>
                 <Bot size={14} /> {aiPassageLoading ? '토론 질문 생성 중…' : '토론 질문 + 짧은 큐레이터 코멘트 생성'}
               </button>
               {newPassage.curatorNote && (
                 <>
-                  <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>큐레이터 코멘트</p>
+                  <p className={styles.helperText}>큐레이터 코멘트</p>
                   <textarea value={newPassage.curatorNote}
                     onChange={e => setNewPassage({...newPassage, curatorNote: e.target.value, aiGeneratedNote: false})}
-                    style={{ marginBottom: 8, minHeight: 80, resize: 'vertical' }} />
+                    className={styles.fieldGap} />
                 </>
               )}
             </>
@@ -883,46 +872,46 @@ export default function AdminPage() {
           {/* Manual 모드 */}
           {passageMode === 'manual' && (
             <>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                <input placeholder="책 제목 *" value={newPassage.bookTitle} onChange={e => setNewPassage({...newPassage, bookTitle: e.target.value})} style={{ flex: 2 }} />
-                <input placeholder="저자" value={newPassage.bookAuthor} onChange={e => setNewPassage({...newPassage, bookAuthor: e.target.value})} style={{ flex: 1 }} />
+              <div className={`${styles.rowBase} ${styles.mb8}`}>
+                <input placeholder="책 제목 *" value={newPassage.bookTitle} onChange={e => setNewPassage({...newPassage, bookTitle: e.target.value})} className={styles.flex2} />
+                <input placeholder="저자" value={newPassage.bookAuthor} onChange={e => setNewPassage({...newPassage, bookAuthor: e.target.value})} className={styles.flex1} />
               </div>
-              <select value={newPassage.bookId} onChange={e => setNewPassage({...newPassage, bookId: e.target.value})} style={{ marginBottom: 8 }}>
+              <select value={newPassage.bookId} onChange={e => setNewPassage({...newPassage, bookId: e.target.value})} className={styles.fieldGap}>
                 <option value="">시스템 내 책 연결 (선택사항)</option>
                 {books.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
               </select>
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>본문 / 큐레이터 글</p>
+              <p className={styles.helperText}>본문 / 큐레이터 글</p>
               <textarea placeholder="2문단 큐레이터 글 또는 짧은 발췌 *" value={newPassage.curatorNote}
                 onChange={e => setNewPassage({...newPassage, curatorNote: e.target.value})}
-                style={{ marginBottom: 8, minHeight: 120, resize: 'vertical' }} />
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>짧은 직접 인용 (선택)</p>
+                className={styles.textareaH120} />
+              <p className={styles.helperText}>짧은 직접 인용 (선택)</p>
               <textarea placeholder='큰따옴표로 묶일 짧은 인용. 입력 시 출처 필수.' value={newPassage.excerpt}
                 onChange={e => setNewPassage({...newPassage, excerpt: e.target.value})}
-                style={{ marginBottom: 8, minHeight: 60, fontSize: 13, resize: 'vertical' }} />
-              <input placeholder="출처 표기 (인용이 있으면 필수)" value={newPassage.source} onChange={e => setNewPassage({...newPassage, source: e.target.value})} style={{ marginBottom: 12 }} />
+                className={styles.textareaH60} />
+              <input placeholder="출처 표기 (인용이 있으면 필수)" value={newPassage.source} onChange={e => setNewPassage({...newPassage, source: e.target.value})} className={styles.fieldGapLg} />
             </>
           )}
 
           {/* 관련 질문 (공통) */}
-          <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 6, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <p className={styles.relatedQuestionsLabel}>
             관련 질문 (최대 5개){newPassage.aiGeneratedQuestions && <> — <Bot size={12} /> AI 생성</>}
           </p>
           {newPassage.questions.map((q, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-              <span style={{ fontSize: 12, color: 'var(--muted)', flexShrink: 0 }}>{i + 1}.</span>
+            <div key={i} className={styles.numberedRow}>
+              <span className={styles.numberBadge}>{i + 1}.</span>
               <input value={q} onChange={e => setNewPassage(prev => ({...prev, questions: prev.questions.map((qq, j) => j === i ? e.target.value : qq), aiGeneratedQuestions: false}))}
-                style={{ flex: 1, fontSize: 12, padding: '6px 10px' }} />
+                className={styles.numberedInput} />
               <button onClick={() => setNewPassage(prev => ({...prev, questions: prev.questions.filter((_, j) => j !== i)}))}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 14, flexShrink: 0 }}>×</button>
+                className={styles.removeBtn}>×</button>
             </div>
           ))}
           {newPassage.questions.length < 5 && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <div className={`${styles.rowBase} ${styles.mb8}`}>
               <input placeholder="질문 추가" value={newPassageQuestion} onChange={e => setNewPassageQuestion(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && newPassageQuestion.trim()) {
                   setNewPassage(prev => ({...prev, questions: [...prev.questions, newPassageQuestion.trim()]}));
                   setNewPassageQuestion('');
-                }}} style={{ flex: 1 }} />
+                }}} className={styles.flex1} />
               <button className="btn-sm btn-outline" onClick={() => {
                 if (newPassageQuestion.trim()) {
                   setNewPassage(prev => ({...prev, questions: [...prev.questions, newPassageQuestion.trim()]}));
@@ -932,98 +921,98 @@ export default function AdminPage() {
             </div>
           )}
 
-          <button className="btn-primary" onClick={addPassage} style={{ marginTop: 12 }}>등록</button>
+          <button className={`btn-primary ${styles.mt12}`} onClick={addPassage}>등록</button>
 
           {/* 등록된 목록 */}
-          <div style={{ marginTop: 20 }}>
-            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', marginBottom: 10 }}>등록된 발췌문</p>
+          <div className={styles.mt20}>
+            <p className={styles.registeredListLabel}>등록된 발췌문</p>
             {passages.length === 0 ? (
-              <p style={{ fontSize: 13, color: 'var(--muted)' }}>아직 등록된 발췌문이 없어요.</p>
+              <p className={styles.mutedSmall}>아직 등록된 발췌문이 없어요.</p>
             ) : (
               passages.map(p => (
-                <div key={p.id} style={{ ...listItemStyle, alignItems: 'flex-start', flexDirection: 'column', gap: 6 }}>
+                <div key={p.id} className={`${styles.listItem} ${styles.listItemColumn}`}>
                   {editingPassageId === p.id ? (
                     /* 수정 폼 */
-                    <div style={{ width: '100%' }}>
-                      <select value={editPassage.kind} onChange={e => setEditPassage({...editPassage, kind: e.target.value, publicDomain: e.target.value === 'public_domain'})} style={{ marginBottom: 8 }}>
+                    <div className={styles.editFormWrap}>
+                      <select value={editPassage.kind} onChange={e => setEditPassage({...editPassage, kind: e.target.value, publicDomain: e.target.value === 'public_domain'})} className={styles.fieldGap}>
                         <option value="curator_intro">✍️ 큐레이터 소개</option>
                         <option value="public_domain">📜 원문 발췌 (저작권 만료)</option>
                       </select>
-                      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                        <input placeholder="책 제목 *" value={editPassage.bookTitle} onChange={e => setEditPassage({...editPassage, bookTitle: e.target.value})} style={{ flex: 2 }} />
-                        <input placeholder="저자" value={editPassage.bookAuthor} onChange={e => setEditPassage({...editPassage, bookAuthor: e.target.value})} style={{ flex: 1 }} />
+                      <div className={`${styles.rowBase} ${styles.mb8}`}>
+                        <input placeholder="책 제목 *" value={editPassage.bookTitle} onChange={e => setEditPassage({...editPassage, bookTitle: e.target.value})} className={styles.flex2} />
+                        <input placeholder="저자" value={editPassage.bookAuthor} onChange={e => setEditPassage({...editPassage, bookAuthor: e.target.value})} className={styles.flex1} />
                       </div>
                       {editPassage.kind === 'public_domain' ? (
                         <>
-                          <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>원문 발췌 *</p>
+                          <p className={styles.helperText}>원문 발췌 *</p>
                           <textarea value={editPassage.excerpt} onChange={e => setEditPassage({...editPassage, excerpt: e.target.value})}
-                            style={{ marginBottom: 8, minHeight: 160, resize: 'vertical' }} />
-                          <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>큐레이터 코멘트 (선택)</p>
+                            className={styles.textareaH160} />
+                          <p className={styles.helperText}>큐레이터 코멘트 (선택)</p>
                           <textarea value={editPassage.curatorNote} onChange={e => setEditPassage({...editPassage, curatorNote: e.target.value})}
-                            style={{ marginBottom: 8, minHeight: 80, resize: 'vertical' }} />
+                            className={styles.fieldGap} />
                         </>
                       ) : (
                         <>
-                          <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>큐레이터 코멘트</p>
+                          <p className={styles.helperText}>큐레이터 코멘트</p>
                           <textarea value={editPassage.curatorNote} onChange={e => setEditPassage({...editPassage, curatorNote: e.target.value})}
-                            style={{ marginBottom: 8, minHeight: 120, resize: 'vertical' }} />
-                          <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>짧은 직접 인용 (선택)</p>
+                            className={styles.textareaH120} />
+                          <p className={styles.helperText}>짧은 직접 인용 (선택)</p>
                           <textarea value={editPassage.excerpt} onChange={e => setEditPassage({...editPassage, excerpt: e.target.value})}
-                            style={{ marginBottom: 8, minHeight: 60, fontSize: 13, resize: 'vertical' }} />
+                            className={styles.textareaH60} />
                         </>
                       )}
-                      <input placeholder="출처 (선택, 인용 시 필수)" value={editPassage.source} onChange={e => setEditPassage({...editPassage, source: e.target.value})} style={{ marginBottom: 8 }} />
-                      <input placeholder="출처 URL (선택)" value={editPassage.sourceUrl} onChange={e => setEditPassage({...editPassage, sourceUrl: e.target.value})} style={{ marginBottom: 8 }} />
+                      <input placeholder="출처 (선택, 인용 시 필수)" value={editPassage.source} onChange={e => setEditPassage({...editPassage, source: e.target.value})} className={styles.fieldGap} />
+                      <input placeholder="출처 URL (선택)" value={editPassage.sourceUrl} onChange={e => setEditPassage({...editPassage, sourceUrl: e.target.value})} className={styles.fieldGap} />
                       {/* 질문 수정 */}
-                      <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>질문</p>
+                      <p className={styles.helperText}>질문</p>
                       {editPassage.questions.map((q, i) => (
-                        <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
-                          <span style={{ fontSize: 12, color: 'var(--muted)', flexShrink: 0 }}>{i + 1}.</span>
+                        <div key={i} className={styles.numberedRow}>
+                          <span className={styles.numberBadge}>{i + 1}.</span>
                           <input value={q} onChange={e => setEditPassage(prev => ({...prev, questions: prev.questions.map((qq, j) => j === i ? e.target.value : qq)}))}
-                            style={{ flex: 1, fontSize: 12, padding: '6px 10px' }} />
+                            className={styles.numberedInput} />
                           <button onClick={() => setEditPassage(prev => ({...prev, questions: prev.questions.filter((_, j) => j !== i)}))}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 14, flexShrink: 0 }}>×</button>
+                            className={styles.removeBtn}>×</button>
                         </div>
                       ))}
                       {editPassage.questions.length < 5 && (
-                        <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                        <div className={`${styles.rowBase} ${styles.mb10}`}>
                           <input placeholder="질문 추가" value={editPassageQuestion} onChange={e => setEditPassageQuestion(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter' && editPassageQuestion.trim()) { setEditPassage(prev => ({...prev, questions: [...prev.questions, editPassageQuestion.trim()]})); setEditPassageQuestion(''); }}}
-                            style={{ flex: 1, fontSize: 13 }} />
+                            className={styles.editQuestionAddInput} />
                           <button className="btn-sm btn-outline" onClick={() => { if (editPassageQuestion.trim()) { setEditPassage(prev => ({...prev, questions: [...prev.questions, editPassageQuestion.trim()]})); setEditPassageQuestion(''); } }}>추가</button>
                         </div>
                       )}
-                      <div style={{ display: 'flex', gap: 8 }}>
+                      <div className={styles.rowBase}>
                         <button className="btn-sm btn-outline" onClick={() => { setEditingPassageId(null); setEditPassageQuestion(''); }}>취소</button>
-                        <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => saveEditPassage(p.id)}>저장</button>
+                        <button className={`btn-sm ${styles.accentBtn}`} onClick={() => saveEditPassage(p.id)}>저장</button>
                       </div>
                     </div>
                   ) : (
                     /* 목록 뷰 */
                     <>
-                      <div style={{ display: 'flex', width: '100%', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 10, background: p.period === 'weekly' ? 'var(--accent2)' : 'var(--accent)', color: '#fff', borderRadius: 10, padding: '2px 8px', flexShrink: 0 }}>
+                      <div className={styles.passageRowHead}>
+                        <span className={styles.passageBadge} data-weekly={p.period === 'weekly' || undefined}>
                           {p.period === 'weekly' ? '주간' : '월간'}
                         </span>
                         {p.kind === 'public_domain' ? (
-                          <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--accent)', borderRadius: 10, padding: '2px 8px', flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3 }}><ScrollText size={10} /> 원문</span>
+                          <span className={styles.passageBadgeAccent}><ScrollText size={10} /> 원문</span>
                         ) : p.kind === 'curator_intro' ? (
-                          <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--muted)', borderRadius: 10, padding: '2px 8px', flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3 }}><PenLine size={10} /> 소개</span>
+                          <span className={styles.passageBadgeMuted}><PenLine size={10} /> 소개</span>
                         ) : null}
-                        <span style={{ fontSize: 12, color: 'var(--muted)', flexShrink: 0 }}>{p.periodKey}</span>
-                        <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.bookTitle}</span>
-                        <button className="btn-sm btn-outline" onClick={() => togglePassageActive(p.id, p.isActive)}
-                          style={{ flexShrink: 0, background: p.isActive ? 'var(--accent)' : '', color: p.isActive ? '#fff' : '', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <span className={`${styles.mutedTiny} ${styles.shrink0}`}>{p.periodKey}</span>
+                        <span className={styles.passageBookTitle}>{p.bookTitle}</span>
+                        <button className={`btn-sm btn-outline ${styles.shrink0} ${styles.passageToggleBtn}`} onClick={() => togglePassageActive(p.id, p.isActive)}
+                          data-active={p.isActive || undefined}>
                           {p.isActive ? <><CheckCircle2 size={12} /> 노출 중</> : '노출'}
                         </button>
-                        <button className="btn-sm btn-outline" onClick={() => { setEditingPassageId(p.id); setEditPassage({ bookTitle: p.bookTitle || '', bookAuthor: p.bookAuthor || '', kind: p.kind || 'curator_intro', excerpt: p.excerpt || '', curatorNote: p.curatorNote || '', passage: p.passage || '', questions: p.questions || [], source: p.source || '', sourceType: p.sourceType || 'manual', sourceUrl: p.sourceUrl || '', publicDomain: !!p.publicDomain }); setEditPassageQuestion(''); }} style={{ flexShrink: 0 }}>수정</button>
-                        <button className="btn-sm btn-danger" onClick={() => deletePassage(p.id)} style={{ flexShrink: 0 }}>삭제</button>
+                        <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={() => { setEditingPassageId(p.id); setEditPassage({ bookTitle: p.bookTitle || '', bookAuthor: p.bookAuthor || '', kind: p.kind || 'curator_intro', excerpt: p.excerpt || '', curatorNote: p.curatorNote || '', passage: p.passage || '', questions: p.questions || [], source: p.source || '', sourceType: p.sourceType || 'manual', sourceUrl: p.sourceUrl || '', publicDomain: !!p.publicDomain }); setEditPassageQuestion(''); }}>수정</button>
+                        <button className={`btn-sm btn-danger ${styles.shrink0}`} onClick={() => deletePassage(p.id)}>삭제</button>
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>
+                      <p className={styles.passageExcerptPreview}>
                         {(() => { const t = p.excerpt || p.curatorNote || p.passage || ''; return t ? `"${t.slice(0, 60)}${t.length > 60 ? '…' : ''}"` : ''; })()}
                       </p>
                       {p.questions?.length > 0 && (
-                        <p style={{ fontSize: 11, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 3 }}><MessageCircle size={11} /> 질문 {p.questions.length}개</p>
+                        <p className={styles.passageQuestionCount}><MessageCircle size={11} /> 질문 {p.questions.length}개</p>
                       )}
                     </>
                   )}
@@ -1036,30 +1025,30 @@ export default function AdminPage() {
 
       {/* 일정 관리 */}
       {tab === 'meetings' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={15} /> 일정 추가</h3>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label style={{ fontSize: 11, color: 'var(--muted)' }}>시작</label>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><Calendar size={15} /> 일정 추가</h3>
+          <div className={`${styles.rowBase} ${styles.mb8}`}>
+            <div className={styles.fieldCol}>
+              <label className={styles.fieldLabel}>시작</label>
               <input type="datetime-local" value={newMeeting.start} onChange={e => setNewMeeting({...newMeeting, start: e.target.value})} />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label style={{ fontSize: 11, color: 'var(--muted)' }}>종료</label>
+            <div className={styles.fieldCol}>
+              <label className={styles.fieldLabel}>종료</label>
               <input type="datetime-local" value={newMeeting.end} onChange={e => setNewMeeting({...newMeeting, end: e.target.value})} />
             </div>
           </div>
-          <select value={newMeeting.bookId} onChange={e => setNewMeeting({...newMeeting, bookId: e.target.value})} style={{ marginBottom: 8 }}>
+          <select value={newMeeting.bookId} onChange={e => setNewMeeting({...newMeeting, bookId: e.target.value})} className={styles.fieldGap}>
             <option value="">책 선택 (선택사항)</option>
             {books.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
           </select>
-          <input placeholder="메모 (선택)" value={newMeeting.note} onChange={e => setNewMeeting({...newMeeting, note: e.target.value})} style={{ marginBottom: 8 }} />
+          <input placeholder="메모 (선택)" value={newMeeting.note} onChange={e => setNewMeeting({...newMeeting, note: e.target.value})} className={styles.fieldGap} />
           <button className="btn-primary" onClick={addMeeting}>일정 추가</button>
-          <div style={{ marginTop: 14 }}>
+          <div className={styles.mt14}>
             {meetings.map(m => (
-              <div key={m.id} style={listItemStyle}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 500 }}>{formatDateTime(m.date)}{m.dateEnd ? ` ~ ${formatDateTime(m.dateEnd)}` : ''}</div>
-                  {m.note && <div style={{ fontSize: 12, color: 'var(--muted)' }}>{m.note}</div>}
+              <div key={m.id} className={styles.listItem}>
+                <div className={styles.flex1}>
+                  <div className={styles.listTitle}>{formatDateTime(m.date)}{m.dateEnd ? ` ~ ${formatDateTime(m.dateEnd)}` : ''}</div>
+                  {m.note && <div className={styles.mutedTiny}>{m.note}</div>}
                 </div>
                 <button className="btn-sm btn-danger" onClick={() => deleteMeeting(m.id)}>삭제</button>
               </div>
@@ -1070,10 +1059,10 @@ export default function AdminPage() {
 
       {/* 공지 관리 */}
       {tab === 'notices' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><Volume2 size={15} /> 공지 추가</h3>
-          <input placeholder="공지 제목" value={newNotice.title} onChange={e => setNewNotice({...newNotice, title: e.target.value})} style={{ marginBottom: 8 }} />
-          <div style={{ marginBottom: 8 }}>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><Volume2 size={15} /> 공지 추가</h3>
+          <input placeholder="공지 제목" value={newNotice.title} onChange={e => setNewNotice({...newNotice, title: e.target.value})} className={styles.fieldGap} />
+          <div className={styles.fieldGap}>
             <QuillEditor
               value={newNotice.content}
               onChange={v => setNewNotice({...newNotice, content: v})}
@@ -1086,19 +1075,19 @@ export default function AdminPage() {
               }}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <input type="checkbox" id="pinned" checked={newNotice.pinned} onChange={e => setNewNotice({...newNotice, pinned: e.target.checked})} style={{ width: 'auto' }} />
-            <label htmlFor="pinned" style={{ fontSize: 13, color: 'var(--muted)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Pin size={13} /> 홈 상단 고정 공지로 설정</label>
+          <div className={styles.checkboxRow}>
+            <input type="checkbox" id="pinned" checked={newNotice.pinned} onChange={e => setNewNotice({...newNotice, pinned: e.target.checked})} className={styles.checkbox} />
+            <label htmlFor="pinned" className={styles.checkboxLabel}><Pin size={13} /> 홈 상단 고정 공지로 설정</label>
           </div>
           <button className="btn-primary" onClick={addNotice}>공지 등록</button>
 
-          <div style={{ marginTop: 14 }}>
+          <div className={styles.mt14}>
             {notices.map(n => (
               <div key={n.id}>
                 {editingNoticeId === n.id ? (
-                  <div style={{ padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
-                    <input value={editNotice.title} onChange={e => setEditNotice({...editNotice, title: e.target.value})} style={{ marginBottom: 8 }} />
-                    <div style={{ marginBottom: 8 }}>
+                  <div className={styles.noticeEditWrap}>
+                    <input value={editNotice.title} onChange={e => setEditNotice({...editNotice, title: e.target.value})} className={styles.fieldGap} />
+                    <div className={styles.fieldGap}>
                       <QuillEditor
                         value={editNotice.content}
                         onChange={v => setEditNotice({...editNotice, content: v})}
@@ -1111,27 +1100,27 @@ export default function AdminPage() {
                         }}
                       />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                      <input type="checkbox" checked={editNotice.pinned} onChange={e => setEditNotice({...editNotice, pinned: e.target.checked})} style={{ width: 'auto' }} />
-                      <span style={{ fontSize: 13, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', gap: 3 }}><Pin size={13} /> 고정</span>
+                    <div className={styles.checkboxRowTight}>
+                      <input type="checkbox" checked={editNotice.pinned} onChange={e => setEditNotice({...editNotice, pinned: e.target.checked})} className={styles.checkbox} />
+                      <span className={styles.pinnedLabel}><Pin size={13} /> 고정</span>
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div className={styles.rowBase}>
                       <button className="btn-sm btn-outline" onClick={() => setEditingNoticeId(null)}>취소</button>
-                      <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => saveEditNotice(n.id)}>저장</button>
+                      <button className={`btn-sm ${styles.accentBtn}`} onClick={() => saveEditNotice(n.id)}>저장</button>
                     </div>
                   </div>
                 ) : (
-                  <div style={listItemStyle}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>{n.pinned && <Pin size={12} />}{n.title}</div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div className={styles.listItem}>
+                    <div className={`${styles.flex1} ${styles.minW0}`}>
+                      <div className={styles.listTitleRow}>{n.pinned && <Pin size={12} />}{n.title}</div>
+                      <div className={styles.listSubtitleEllipsis}>
                         {stripHtml(n.content).slice(0,40) + '…'}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                      {!n.pinned && <button className="btn-sm btn-outline" onClick={() => setPinned(n.id)} style={{ flexShrink: 0 }}>고정</button>}
-                      <button className="btn-sm btn-outline" onClick={() => { setEditingNoticeId(n.id); setEditNotice({ title: n.title, content: n.content, pinned: n.pinned }); }} style={{ flexShrink: 0 }}>수정</button>
-                      <button className="btn-sm btn-danger" onClick={() => deleteNotice(n.id)} style={{ flexShrink: 0 }}>삭제</button>
+                    <div className={styles.listActions}>
+                      {!n.pinned && <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={() => setPinned(n.id)}>고정</button>}
+                      <button className={`btn-sm btn-outline ${styles.shrink0}`} onClick={() => { setEditingNoticeId(n.id); setEditNotice({ title: n.title, content: n.content, pinned: n.pinned }); }}>수정</button>
+                      <button className={`btn-sm btn-danger ${styles.shrink0}`} onClick={() => deleteNotice(n.id)}>삭제</button>
                     </div>
                   </div>
                 )}
@@ -1143,63 +1132,62 @@ export default function AdminPage() {
 
       {/* 글머리 관리 */}
       {tab === 'prefixes' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><Tag size={15} /> 자유게시판 글머리 관리</h3>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><Tag size={15} /> 자유게시판 글머리 관리</h3>
+          <div className={`${styles.rowBase} ${styles.mb14}`}>
             <input placeholder="새 글머리 (예: 공략, 질문, 잡담)" value={newPrefix} onChange={e => setNewPrefix(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addPrefix()} style={{ flex: 1 }} />
-            <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff', flexShrink: 0 }} onClick={addPrefix}>추가</button>
+              onKeyDown={e => e.key === 'Enter' && addPrefix()} className={styles.flex1} />
+            <button className={`btn-sm ${styles.accentBtnShrink}`} onClick={addPrefix}>추가</button>
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className={styles.rowWrap}>
             {prefixes.map(p => (
-              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--tag-bg)', borderRadius: 20, padding: '4px 10px 4px 12px' }}>
-                <span style={{ fontSize: 13 }}>{p.label}</span>
-                <button onClick={() => deletePrefix(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              <div key={p.id} className={styles.prefixChip}>
+                <span className={styles.prefixChipText}>{p.label}</span>
+                <button onClick={() => deletePrefix(p.id)} className={styles.prefixRemoveBtn}>×</button>
               </div>
             ))}
-            {prefixes.length === 0 && <p style={{ fontSize: 13, color: 'var(--muted)' }}>아직 글머리가 없어요.</p>}
+            {prefixes.length === 0 && <p className={styles.mutedSmall}>아직 글머리가 없어요.</p>}
           </div>
         </div>
       )}
 
       {/* 알림 관리 */}
       {tab === 'notifications' && (
-        <div style={sectionStyle}>
-          <h3 style={{ ...h3Style, display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={15} /> 알림 보내기</h3>
-          <input placeholder="알림 제목" value={newNotif.title} onChange={e => setNewNotif({...newNotif, title: e.target.value})} style={{ marginBottom: 8 }} />
-          <textarea placeholder="알림 내용" value={newNotif.body} onChange={e => setNewNotif({...newNotif, body: e.target.value})} style={{ marginBottom: 8, minHeight: 80 }} />
-          <input placeholder="이동할 URL (예: /notice, /board)" value={newNotif.url} onChange={e => setNewNotif({...newNotif, url: e.target.value})} style={{ marginBottom: 8 }} />
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}><Bell size={15} /> 알림 보내기</h3>
+          <input placeholder="알림 제목" value={newNotif.title} onChange={e => setNewNotif({...newNotif, title: e.target.value})} className={styles.fieldGap} />
+          <textarea placeholder="알림 내용" value={newNotif.body} onChange={e => setNewNotif({...newNotif, body: e.target.value})} className={styles.fieldGap} />
+          <input placeholder="이동할 URL (예: /notice, /board)" value={newNotif.url} onChange={e => setNewNotif({...newNotif, url: e.target.value})} className={styles.fieldGap} />
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          <div className={`${styles.rowBase} ${styles.mb20}`}>
             <button
               onClick={sendNow}
               disabled={sendingNow}
-              className="btn-primary"
-              style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              className={`btn-primary ${styles.sendBtnInner}`}
             >
               {sendingNow ? '발송 중…' : <><Megaphone size={14} /> 지금 바로 발송</>}
             </button>
           </div>
 
-          <h3 style={{ ...h3Style, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={15} /> 예약 알림</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 4 }}>
-            <label style={{ fontSize: 11, color: 'var(--muted)' }}>발송 날짜 (해당 날 오전 9시에 발송)</label>
-            <input type="date" value={newNotif.date} onChange={e => setNewNotif({...newNotif, date: e.target.value})} style={{ marginBottom: 8 }} />
+          <h3 className={`${styles.sectionTitle} ${styles.mt8}`}><Calendar size={15} /> 예약 알림</h3>
+          <div className={styles.dateFieldCol}>
+            <label className={styles.fieldLabel}>발송 날짜 (해당 날 오전 9시에 발송)</label>
+            <input type="date" value={newNotif.date} onChange={e => setNewNotif({...newNotif, date: e.target.value})} className={styles.fieldGap} />
           </div>
-          <button onClick={addScheduledNotif} className="btn-primary" style={{ marginBottom: 16 }}>예약 등록</button>
+          <button onClick={addScheduledNotif} className={`btn-primary ${styles.mb16}`}>예약 등록</button>
 
           <div>
             {scheduled.length === 0 ? (
-              <p style={{ fontSize: 13, color: 'var(--muted)' }}>예약된 알림이 없어요.</p>
+              <p className={styles.mutedSmall}>예약된 알림이 없어요.</p>
             ) : (
               scheduled.map(n => (
-                <div key={n.id} style={{ ...listItemStyle, opacity: n.sent ? 0.5 : 1 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 500 }}>{n.title}</div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div key={n.id} className={styles.listItem} data-sent={n.sent || undefined}>
+                  <div className={styles.flex1}>
+                    <div className={styles.listTitle}>{n.title}</div>
+                    <div className={styles.listSubtitle}>
                       <Calendar size={12} /> {n.date} · {n.sent ? <><CheckCircle2 size={12} /> 발송완료</> : <><Clock size={12} /> 대기중</>}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)' }}>{n.body}</div>
+                    <div className={styles.mutedTiny}>{n.body}</div>
                   </div>
                   {!n.sent && <button className="btn-sm btn-danger" onClick={() => deleteScheduled(n.id)}>삭제</button>}
                 </div>
