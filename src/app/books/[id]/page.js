@@ -10,6 +10,7 @@ import ReviewCard from '@/components/ReviewCard';
 import { sanitizeHtmlForStorage } from '@/lib/sanitize.client';
 import { authenticatedJsonFetch } from '@/lib/authenticatedFetch';
 import { ArrowLeft, Library, MessageCircle, Pencil, Star, Save } from 'lucide-react';
+import styles from './book-detail.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -126,33 +127,33 @@ export default function BookReviewsPage({ params }) {
   return (
     <div>
       {/* 뒤로가기 */}
-      <button onClick={() => router.push('/books')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 13, marginBottom: 16, padding: 0 }}>
+      <button onClick={() => router.push('/books')} className={styles.backBtn}>
         <ArrowLeft size={14} /> 목록으로
       </button>
 
       {/* 책 정보 */}
-      <div className="card" style={{ padding: 16, marginBottom: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+      <div className={`card ${styles.bookInfoCard}`}>
         {book.cover ? (
-          <img src={book.cover} alt={book.title} style={{ width: 60, height: 88, objectFit: 'cover', borderRadius: 5, flexShrink: 0, boxShadow: '1px 2px 8px rgba(0,0,0,0.12)' }} />
+          <img src={book.cover} alt={book.title} className={styles.coverImg} />
         ) : (
-          <div style={{ width: 60, height: 88, background: 'var(--tag-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 5, flexShrink: 0 }}><Library size={24} /></div>
+          <div className={styles.coverPlaceholder}><Library size={24} /></div>
         )}
         <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{book.title}</h1>
-          <p style={{ fontSize: 13, color: 'var(--muted)' }}>{book.author}</p>
-          {book.genre && <span className="tag" style={{ marginTop: 6, display: 'inline-block' }}>{book.genre}</span>}
+          <h1 className={styles.bookTitle}>{book.title}</h1>
+          <p className={styles.bookAuthor}>{book.author}</p>
+          {book.genre && <span className={`tag ${styles.genreTag}`}>{book.genre}</span>}
         </div>
       </div>
 
       {/* 토론 질문 */}
       {questions.length > 0 && (
-        <div className="card" style={{ padding: 18, marginBottom: 20 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}><MessageCircle size={14} /> 독서모임 토론 질문</h2>
-          <ol style={{ paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className={`card ${styles.questionsCard}`}>
+          <h2 className={styles.questionsTitle}><MessageCircle size={14} /> 독서모임 토론 질문</h2>
+          <ol className={styles.questionsList}>
             {questions.map((q, i) => (
-              <li key={q.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: 17, color: 'var(--accent)', flexShrink: 0, lineHeight: 1.4 }}>{i + 1}.</span>
-                <span style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text)' }}>{q.question}</span>
+              <li key={q.id} className={styles.questionItem}>
+                <span className={styles.questionNum}>{i + 1}.</span>
+                <span className={styles.questionText}>{q.question}</span>
               </li>
             ))}
           </ol>
@@ -161,22 +162,22 @@ export default function BookReviewsPage({ params }) {
 
       {/* 감상평 작성 */}
       {user ? (
-        <div className="card" style={{ padding: 18, marginBottom: 20 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--muted)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}><Pencil size={14} /> 감상평 남기기</h3>
+        <div className={`card ${styles.reviewFormCard}`}>
+          <h3 className={styles.reviewFormTitle}><Pencil size={14} /> 감상평 남기기</h3>
 
           {/* 별점 */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+          <div className={styles.starRow}>
             {[1,2,3,4,5].map(n => (
               <button key={n} type="button" onClick={() => setRating(n)}
-                style={{ fontSize: 22, background: 'none', border: 'none', cursor: 'pointer', color: n <= rating ? '#f0a500' : 'var(--line)', padding: 0, lineHeight: 1, display: 'inline-flex' }}>
+                className={styles.starBtn} data-active={n <= rating || undefined}>
                 <Star size={22} fill={n <= rating ? 'currentColor' : 'none'} />
               </button>
             ))}
-            {rating > 0 && <button onClick={() => setRating(0)} style={{ fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: 4 }}>초기화</button>}
+            {rating > 0 && <button onClick={() => setRating(0)} className={styles.resetBtn}>초기화</button>}
           </div>
 
           {/* Quill */}
-          <div style={{ marginBottom: 10 }}>
+          <div className={styles.editorWrap}>
             <QuillEditor
               value={content}
               onChange={setContent}
@@ -187,37 +188,37 @@ export default function BookReviewsPage({ params }) {
           </div>
 
           {draft && (
-            <button onClick={() => { setContent(draft); setDraft(''); }} style={{ fontSize: 12, color: 'var(--accent2)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={() => { setContent(draft); setDraft(''); }} className={styles.draftBtn}>
               <Save size={12} /> 임시저장된 내용 불러오기
             </button>
           )}
 
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={saveDraft} className="btn-sm btn-outline" style={{ flex: 1 }}>임시저장</button>
-            <button onClick={handleSubmit} disabled={submitting} className="btn-sm" style={{ flex: 2, background: 'var(--accent)', color: '#fff' }}>
+          <div className={styles.formActions}>
+            <button onClick={saveDraft} className={`btn-sm btn-outline ${styles.draftSubmitBtn}`}>임시저장</button>
+            <button onClick={handleSubmit} disabled={submitting} className={`btn-sm ${styles.postSubmitBtn}`}>
               {submitting ? '저장 중…' : '감상평 남기기'}
             </button>
           </div>
         </div>
       ) : (
-        <div className="card" style={{ padding: 20, textAlign: 'center', marginBottom: 20 }}>
-          <p style={{ color: 'var(--muted)', marginBottom: 12 }}>로그인하면 감상평을 남길 수 있어요.</p>
-          <button onClick={() => router.push('/login')} className="btn-primary" style={{ maxWidth: 200, margin: '0 auto' }}>로그인 / 가입</button>
+        <div className={`card ${styles.loginPrompt}`}>
+          <p className={styles.loginPromptText}>로그인하면 감상평을 남길 수 있어요.</p>
+          <button onClick={() => router.push('/login')} className={`btn-primary ${styles.loginPromptBtn}`}>로그인 / 가입</button>
         </div>
       )}
 
       {/* 감상평 목록 */}
-      <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>감상평 {reviews.length}개</div>
+      <div className={styles.reviewCountLabel}>감상평 {reviews.length}개</div>
       {reviews.length === 0 ? (
         <p className="empty-msg">아직 감상평이 없어요. 첫 번째로 남겨보세요!</p>
       ) : (
         reviews.map(r => (
           editingId === r.id ? (
             <div key={r.id} className="review-card">
-              <div style={{ marginBottom: 6 }}>
+              <div className={styles.editRatingRow}>
                 {[1,2,3,4,5].map(n => (
                   <button key={n} type="button" onClick={() => setEditRating(n)}
-                    style={{ fontSize: 20, background: 'none', border: 'none', cursor: 'pointer', color: n <= editRating ? '#f0a500' : 'var(--line)', padding: 0, display: 'inline-flex' }}>
+                    className={styles.starBtnSm} data-active={n <= editRating || undefined}>
                     <Star size={20} fill={n <= editRating ? 'currentColor' : 'none'} />
                   </button>
                 ))}
@@ -229,9 +230,9 @@ export default function BookReviewsPage({ params }) {
                 minHeight={120}
                 onImageUpload={uploadImage}
               />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <div className={styles.editActions}>
                 <button className="btn-sm btn-outline" onClick={() => setEditingId(null)}>취소</button>
-                <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => handleEdit(r.id)}>수정 완료</button>
+                <button className={`btn-sm ${styles.editSaveBtn}`} onClick={() => handleEdit(r.id)}>수정 완료</button>
               </div>
             </div>
           ) : (
