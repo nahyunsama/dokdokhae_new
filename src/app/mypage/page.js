@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { stripHtml } from '@/lib/searchUtils';
 import { NotebookPen, CornerDownRight } from 'lucide-react';
 import PasswordInput from '@/components/PasswordInput';
+import styles from './mypage.module.css';
 
 const COMMENT_PREVIEW_LEN = 60;
 
@@ -123,13 +124,13 @@ export default function MyPage() {
 
   function PasswordField({ name, label }) {
     return (
-      <label style={{ display: 'block', marginBottom: 10 }}>
-        <span style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 5 }}>{label}</span>
+      <label className={styles.fieldLabel}>
+        <span className={styles.fieldLabelText}>{label}</span>
         <PasswordInput
           value={passwords[name]}
           onChange={(e) => setPasswords((prev) => ({ ...prev, [name]: e.target.value }))}
           autoComplete={name === 'current' ? 'current-password' : 'new-password'}
-          style={{ width: '100%', padding: '10px 11px', border: '1px solid var(--line)', borderRadius: 7, background: 'var(--surface)', color: 'var(--text)', boxSizing: 'border-box' }}
+          className={styles.passwordField}
         />
       </label>
     );
@@ -138,9 +139,9 @@ export default function MyPage() {
   if (!user) return (
     <div>
       <div className="section-title">마이페이지</div>
-      <div className="card" style={{ padding: 30, textAlign: 'center' }}>
-        <p style={{ color: 'var(--muted)', marginBottom: 12 }}>로그인이 필요해요.</p>
-        <button onClick={() => router.push('/login')} className="btn-primary" style={{ maxWidth: 200, margin: '0 auto' }}>로그인 / 가입</button>
+      <div className={`card ${styles.authGate}`}>
+        <p className={styles.authGateText}>로그인이 필요해요.</p>
+        <button onClick={() => router.push('/login')} className={`btn-primary ${styles.authGateBtn}`}>로그인 / 가입</button>
       </div>
     </div>
   );
@@ -148,41 +149,41 @@ export default function MyPage() {
   return (
     <div>
       {/* 프로필 */}
-      <div className="card" style={{ padding: 20, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, flexShrink: 0 }}>
+      <div className={`card ${styles.profileCard}`}>
+        <div className={styles.avatar}>
           {profile?.nickname?.slice(0, 1)}
         </div>
         <div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 700, marginBottom: 2 }}>{profile?.nickname}</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)' }}>{user.email}</div>
+          <div className={styles.profileName}>{profile?.nickname}</div>
+          <div className={styles.profileEmail}>{user.email}</div>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 20, marginBottom: 20 }}>
-        <div style={{ fontWeight: 700, marginBottom: 12 }}>계정 설정</div>
-        <form onSubmit={saveNickname} style={{ marginBottom: 22 }}>
-          <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 5 }}>닉네임</label>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={12} style={{ flex: '1 1 auto', minWidth: 0, width: 0, padding: '10px 11px', border: '1px solid var(--line)', borderRadius: 7, background: 'var(--surface)', color: 'var(--text)' }} />
-            <button type="submit" disabled={nicknameSaving} className="btn-primary" style={{ flex: '0 0 auto', width: 'auto', maxWidth: 'none', whiteSpace: 'nowrap' }}>{nicknameSaving ? '저장 중…' : '닉네임 저장'}</button>
+      <div className={`card ${styles.settingsCard}`}>
+        <div className={styles.settingsHeading}>계정 설정</div>
+        <form onSubmit={saveNickname} className={styles.nicknameForm}>
+          <label className={styles.fieldLabelText}>닉네임</label>
+          <div className={styles.nicknameRow}>
+            <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={12} className={styles.nicknameInput} />
+            <button type="submit" disabled={nicknameSaving} className={`btn-primary ${styles.nicknameSaveBtn}`}>{nicknameSaving ? '저장 중…' : '닉네임 저장'}</button>
           </div>
-          {nicknameMessage && <div style={{ fontSize: 12, color: nicknameMessage.includes('변경되었습니다') ? 'var(--accent)' : 'var(--danger, #c44)', marginTop: 7 }}>{nicknameMessage}</div>}
+          {nicknameMessage && <div className={styles.formMessage} data-success={nicknameMessage.includes('변경되었습니다') || undefined}>{nicknameMessage}</div>}
         </form>
         <form onSubmit={changePassword}>
-          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 10 }}>비밀번호 변경</div>
+          <div className={styles.passwordHeading}>비밀번호 변경</div>
           <PasswordField name="current" label="현재 비밀번호" />
           <PasswordField name="next" label="새 비밀번호" />
           <PasswordField name="confirm" label="새 비밀번호 확인" />
           <button type="submit" disabled={passwordSaving} className="btn-primary">{passwordSaving ? '변경 중…' : '비밀번호 변경'}</button>
-          {passwordMessage && <div style={{ fontSize: 12, color: passwordMessage.includes('변경되었습니다') ? 'var(--accent)' : 'var(--danger, #c44)', marginTop: 7 }}>{passwordMessage}</div>}
+          {passwordMessage && <div className={styles.formMessage} data-success={passwordMessage.includes('변경되었습니다') || undefined}>{passwordMessage}</div>}
         </form>
       </div>
 
       {/* 탭 */}
-      <div style={{ display: 'flex', border: '1.5px solid var(--line)', borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
+      <div className={styles.tabBar}>
         {[['posts', `내 게시글 (${myPosts.length})`], ['comments', `내 댓글 (${myComments.length})`]].map(([key, label]) => (
           <button key={key} onClick={() => setTab(key)}
-            style={{ flex: 1, padding: '10px', border: 'none', background: tab === key ? 'var(--accent)' : 'none', color: tab === key ? '#fff' : 'var(--muted)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+            className={styles.tabBtn} data-active={tab === key || undefined}>
             {label}
           </button>
         ))}
@@ -195,13 +196,13 @@ export default function MyPage() {
           <p className="empty-msg">작성한 게시글이 없어요.</p>
         ) : (
           myPosts.map(p => (
-            <Link key={p.id} href={`/board/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+            <Link key={p.id} href={`/board/${p.id}`} className={styles.rowLink}>
               <div className="post-card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  {p.prefix && <span style={{ fontSize: 11, background: 'var(--accent)', color: '#fff', padding: '1px 7px', borderRadius: 10 }}>{p.prefix}</span>}
-                  <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{p.title}</span>
+                <div className={styles.postHead}>
+                  {p.prefix && <span className={styles.prefixTag}>{p.prefix}</span>}
+                  <span className={styles.postTitle}>{p.title}</span>
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{formatDate(p.createdAt)}</div>
+                <div className={styles.postDate}>{formatDate(p.createdAt)}</div>
               </div>
             </Link>
           ))
@@ -211,16 +212,16 @@ export default function MyPage() {
           <p className="empty-msg">작성한 댓글이 없어요.</p>
         ) : (
           myComments.map(c => (
-            <Link key={c.id} href={commentLink(c)} style={{ textDecoration: 'none', display: 'block' }}>
+            <Link key={c.id} href={commentLink(c)} className={styles.rowLink}>
               <div className="post-card">
-                <div style={{ fontSize: 11, color: 'var(--accent2)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div className={styles.commentHead}>
                   <NotebookPen size={11} /> {c.postTitle || '게시글'}
-                  {c.parentId && <span style={{ marginLeft: 6, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', gap: 3 }}><CornerDownRight size={11} /> 대댓글</span>}
+                  {c.parentId && <span className={styles.replyTag}><CornerDownRight size={11} /> 대댓글</span>}
                 </div>
-                <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <div className={styles.commentPreview}>
                   {stripHtml(c.content).slice(0, COMMENT_PREVIEW_LEN)}{stripHtml(c.content).length > COMMENT_PREVIEW_LEN ? '…' : ''}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{formatDate(c.createdAt)}</div>
+                <div className={styles.postDate}>{formatDate(c.createdAt)}</div>
               </div>
             </Link>
           ))
