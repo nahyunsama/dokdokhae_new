@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { dangerousHtml } from '@/lib/sanitize.client';
 import { Volume2, X, ArrowRight } from 'lucide-react';
+import styles from './NoticeBanner.module.css';
 
 export default function NoticeBanner() {
   const [notice, setNotice] = useState(null);
@@ -21,23 +22,23 @@ export default function NoticeBanner() {
 
   return (
     <>
-      <div className="notice-banner" onClick={() => setOpen(true)} style={{ marginBottom: 14 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent2)', flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3 }}><Volume2 size={12} /> 공지</span>
-        <span style={{ fontSize: 13, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{notice.title}</span>
-        <span style={{ fontSize: 18, color: 'var(--muted)', flexShrink: 0 }}>›</span>
+      <div className={styles.banner} onClick={() => setOpen(true)}>
+        <span className={styles.label}><Volume2 size={12} /> 공지</span>
+        <span className={styles.title}>{notice.title}</span>
+        <span className={styles.chevron}>›</span>
       </div>
 
       {open && (
         <div className="modal-overlay" onClick={() => setOpen(false)}>
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, color: 'var(--accent)' }}>{notice.title}</h2>
-              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--muted)', display: 'flex', alignItems: 'center' }}><X size={20} /></button>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>{notice.title}</h2>
+              <button onClick={() => setOpen(false)} className={styles.closeBtn}><X size={20} /></button>
             </div>
-            <div className="notice-content" style={{ fontSize: 14, lineHeight: 1.8 }} dangerouslySetInnerHTML={dangerousHtml(notice.content)} />
-            <div style={{ marginTop: 16, textAlign: 'right' }}>
+            <div className={`notice-content ${styles.content}`} dangerouslySetInnerHTML={dangerousHtml(notice.content)} />
+            <div className={styles.footer}>
               <button onClick={() => { setOpen(false); router.push(`/notice/${notice.id}`); }}
-                style={{ fontSize: 13, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                className={styles.viewAllBtn}>
                 전체 보기 <ArrowRight size={13} />
               </button>
             </div>
