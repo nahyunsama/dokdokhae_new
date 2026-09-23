@@ -11,6 +11,7 @@ import { stripHtml, matchAny } from '@/lib/searchUtils';
 import { authenticatedJsonFetch } from '@/lib/authenticatedFetch';
 import ReviewCard from '@/components/ReviewCard';
 import { Star } from 'lucide-react';
+import styles from './reviews.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -80,9 +81,9 @@ export default function ReviewsPage() {
   if (!user) return (
     <div>
       <div className="section-title">내 감상평</div>
-      <div className="card" style={{ padding: 30, textAlign: 'center' }}>
-        <p style={{ color: 'var(--muted)', marginBottom: 12 }}>로그인하면 내 감상평을 확인할 수 있어요.</p>
-        <button onClick={() => router.push('/login')} className="btn-primary" style={{ maxWidth: 200, margin: '0 auto' }}>로그인 / 가입</button>
+      <div className={`card ${styles.loginPrompt}`}>
+        <p className={styles.loginPromptText}>로그인하면 내 감상평을 확인할 수 있어요.</p>
+        <button onClick={() => router.push('/login')} className={`btn-primary ${styles.loginPromptBtn}`}>로그인 / 가입</button>
       </div>
     </div>
   );
@@ -91,8 +92,8 @@ export default function ReviewsPage() {
     <div>
       <div className="section-title">{isAdmin ? '전체 감상평' : '내 감상평'}</div>
       {!isAdmin && (
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 14 }}>
-          도서별 감상평을 남기려면 <button onClick={() => router.push('/books')} style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}>도서 목록</button>에서 책을 선택해주세요.
+        <p className={styles.hintText}>
+          도서별 감상평을 남기려면 <button onClick={() => router.push('/books')} className={styles.hintLink}>도서 목록</button>에서 책을 선택해주세요.
         </p>
       )}
 
@@ -109,10 +110,10 @@ export default function ReviewsPage() {
         filtered.map(r => (
           editingId === r.id ? (
             <div key={r.id} className="review-card">
-              <div style={{ marginBottom: 6 }}>
+              <div className={styles.editRatingRow}>
                 {[1,2,3,4,5].map(n => (
                   <button key={n} type="button" onClick={() => setEditRating(n)}
-                    style={{ fontSize: 20, background: 'none', border: 'none', cursor: 'pointer', color: n <= editRating ? '#f0a500' : 'var(--line)', padding: 0, display: 'inline-flex' }}>
+                    className={styles.starBtn} data-active={n <= editRating || undefined}>
                     <Star size={20} fill={n <= editRating ? 'currentColor' : 'none'} />
                   </button>
                 ))}
@@ -128,9 +129,9 @@ export default function ReviewsPage() {
                   return getDownloadURL(fr);
                 }}
               />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <div className={styles.editActions}>
                 <button className="btn-sm btn-outline" onClick={() => setEditingId(null)}>취소</button>
-                <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => handleEdit(r.id)}>수정 완료</button>
+                <button className={`btn-sm ${styles.editSaveBtn}`} onClick={() => handleEdit(r.id)}>수정 완료</button>
               </div>
             </div>
           ) : (
