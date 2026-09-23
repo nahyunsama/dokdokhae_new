@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Heart } from 'lucide-react';
+import styles from './LikeBurst.module.css';
 
 function makeParticles() {
   const count = 6 + Math.floor(Math.random() * 3);
@@ -37,18 +38,16 @@ export default function LikeBurst({ liked, likeCount, size = 14 }) {
   return (
     <span
       onClick={() => { armedRef.current = true; }}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4,
-        color: liked ? 'var(--dd-accent)' : 'inherit',
-      }}
+      className={styles.wrap}
+      data-liked={liked || undefined}
     >
-      <span style={{ position: 'relative', display: 'inline-flex' }}>
+      <span className={styles.heartWrap}>
         <motion.span
           key={pulseKey}
           initial={{ scale: 0.75 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 500, damping: 14 }}
-          style={{ display: 'inline-flex' }}
+          className={styles.heartPulse}
         >
           <Heart size={size} fill={liked ? 'currentColor' : 'none'} />
         </motion.span>
@@ -62,22 +61,18 @@ export default function LikeBurst({ liked, likeCount, size = 14 }) {
               initial={{ opacity: 1, x: 0, y: 0, scale: 1 }}
               animate={{ opacity: 0, x, y, scale: 0 }}
               transition={{ duration: 0.55, ease: 'easeOut' }}
-              style={{
-                position: 'absolute', top: '50%', left: '50%',
-                width: 3.5, height: 3.5, marginTop: -1.75, marginLeft: -1.75,
-                borderRadius: '50%', background: 'var(--dd-accent)', pointerEvents: 'none',
-              }}
+              className={styles.particle}
             />
           );
         })}
       </span>
-      <span style={{ position: 'relative', display: 'inline-grid' }}>
+      <span className={styles.countWrap}>
         <motion.span
           key={likeCount}
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.18 }}
-          style={{ gridArea: '1 / 1' }}
+          className={styles.countItem}
         >
           {likeCount}
         </motion.span>

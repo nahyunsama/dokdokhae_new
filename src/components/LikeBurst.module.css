@@ -1,0 +1,38 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+}
+.wrap[data-liked] {
+  color: var(--dd-accent);
+}
+
+.heartWrap {
+  position: relative;
+  display: inline-flex;
+}
+.heartPulse {
+  display: inline-flex;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.5px;
+  height: 3.5px;
+  margin-top: -1.75px;
+  margin-left: -1.75px;
+  border-radius: 50%;
+  background: var(--dd-accent);
+  pointer-events: none;
+}
+
+.countWrap {
+  position: relative;
+  display: inline-grid;
+}
+.countItem {
+  grid-area: 1 / 1;
+}
