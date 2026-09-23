@@ -1,0 +1,45 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.eyebrow {
+  font-size: 11px;
+  color: var(--dd-text-muted);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.title {
+  font-family: var(--dd-serif);
+  font-size: var(--dd-h1);
+  font-weight: 500;
+  margin: 0;
+  color: var(--dd-text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.titleAccent {
+  font-style: italic;
+  color: var(--dd-accent);
+}
+.searchInput {
+  padding: 10px 14px;
+  min-width: 280px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--dd-text);
+  font-size: 13px;
+  color: var(--dd-text);
+  outline: none;
+  font-family: var(--dd-sans);
+  border-radius: 0;
+}
