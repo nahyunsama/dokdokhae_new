@@ -10,6 +10,7 @@ import { doc, setDoc, getDocs, collection, query, where, serverTimestamp } from 
 import { auth, db } from '@/lib/firebase';
 import { Library } from 'lucide-react';
 import PasswordInput from '@/components/PasswordInput';
+import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,46 +62,44 @@ export default function LoginPage() {
     } catch { setError('메일 발송 실패. 이메일을 확인해주세요.'); }
   };
 
-  const inputStyle = { marginBottom: 10 };
-
   return (
-    <div style={{ maxWidth: 360, margin: '40px auto' }}>
-      <div className="card" style={{ padding: '32px 24px' }}>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, color: 'var(--accent)', textAlign: 'center', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+    <div className={styles.wrap}>
+      <div className={`card ${styles.card}`}>
+        <h1 className={styles.title}>
           <Library size={22} /> 독독하다
         </h1>
 
         {/* 탭 */}
-        <div style={{ display: 'flex', border: '1.5px solid var(--line)', borderRadius: 8, overflow: 'hidden', marginBottom: 20 }}>
+        <div className={styles.tabBar}>
           {['login', 'signup'].map(m => (
             <button key={m} onClick={() => { setMode(m); setError(''); setMsg(''); }}
-              style={{ flex: 1, padding: 10, border: 'none', background: mode === m ? 'var(--accent)' : 'none', color: mode === m ? '#fff' : 'var(--muted)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+              className={styles.tabBtn} data-active={mode === m || undefined}>
               {m === 'login' ? '로그인' : '가입'}
             </button>
           ))}
         </div>
 
-        {error && <p style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 10, textAlign: 'center' }}>{error}</p>}
-        {msg && <p style={{ color: 'var(--accent2)', fontSize: 12, marginBottom: 10, textAlign: 'center' }}>{msg}</p>}
+        {error && <p className={styles.errorText}>{error}</p>}
+        {msg && <p className={styles.msgText}>{msg}</p>}
 
         {mode === 'login' ? (
           <>
-            <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
-            <PasswordInput placeholder="비밀번호" value={pw} onChange={e => setPw(e.target.value)} style={inputStyle} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
-            <button className="btn-primary" onClick={handleLogin} disabled={loading} style={{ marginBottom: 10 }}>
+            <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} className={styles.field} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+            <PasswordInput placeholder="비밀번호" value={pw} onChange={e => setPw(e.target.value)} className={styles.field} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+            <button className={`btn-primary ${styles.loginBtn}`} onClick={handleLogin} disabled={loading}>
               {loading ? '로그인 중…' : '로그인'}
             </button>
-            <div style={{ textAlign: 'center' }}>
-              <button onClick={handleReset} style={{ fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+            <div className={styles.resetWrap}>
+              <button onClick={handleReset} className={styles.resetBtn}>
                 비밀번호를 잊으셨나요?
               </button>
             </div>
           </>
         ) : (
           <>
-            <input type="text" placeholder="닉네임 (변경 불가, 최대 12자)" value={nickname} onChange={e => setNickname(e.target.value)} maxLength={12} style={inputStyle} />
-            <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-            <PasswordInput placeholder="비밀번호 (6자 이상)" value={pw} onChange={e => setPw(e.target.value)} style={inputStyle} onKeyDown={e => e.key === 'Enter' && handleSignup()} />
+            <input type="text" placeholder="닉네임 (변경 불가, 최대 12자)" value={nickname} onChange={e => setNickname(e.target.value)} maxLength={12} className={styles.field} />
+            <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} className={styles.field} />
+            <PasswordInput placeholder="비밀번호 (6자 이상)" value={pw} onChange={e => setPw(e.target.value)} className={styles.field} onKeyDown={e => e.key === 'Enter' && handleSignup()} />
             <button className="btn-primary" onClick={handleSignup} disabled={loading}>
               {loading ? '가입 중…' : '가입하기'}
             </button>

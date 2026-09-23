@@ -1,0 +1,71 @@
+.wrap {
+  max-width: 360px;
+  margin: 40px auto;
+}
+.card {
+  padding: 32px 24px;
+}
+.title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tabBar {
+  display: flex;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.tabBtn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+.tabBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.errorText {
+  color: var(--danger);
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.msgText {
+  color: var(--accent2);
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.field {
+  margin-bottom: 10px;
+}
+.loginBtn {
+  margin-bottom: 10px;
+}
+.resetWrap {
+  text-align: center;
+}
+.resetBtn {
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
