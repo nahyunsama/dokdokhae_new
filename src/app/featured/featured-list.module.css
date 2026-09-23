@@ -1,0 +1,162 @@
+.heading {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subheading {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.activeLink {
+  text-decoration: none;
+}
+.activeCard {
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--accent);
+  cursor: pointer;
+}
+.activeTopRow {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.periodTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.kindBadgePD {
+  font-size: 10px;
+  background: var(--tag-bg);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 2px 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.kindBadgeCurator {
+  font-size: 10px;
+  background: var(--tag-bg);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 2px 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.activeExcerpt {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 10px;
+  white-space: pre-line;
+}
+.sourceText {
+  font-size: 12px;
+  color: var(--muted);
+}
+.activeQuestions {
+  font-size: 12px;
+  color: var(--accent);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tabBar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.tabBtn {
+  padding: 7px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--muted);
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tabBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.listCard {
+  padding: 16px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.listCard[data-active] {
+  opacity: 1;
+}
+.listTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+.listTopLeft {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.periodKeyText {
+  font-size: 11px;
+  color: var(--muted);
+}
+.activeNowBadge {
+  font-size: 10px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+.listExcerpt {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 8px;
+  white-space: pre-line;
+}
+.listQuestions {
+  font-size: 11px;
+  color: var(--accent);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
