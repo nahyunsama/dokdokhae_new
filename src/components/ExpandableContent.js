@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import styles from './ExpandableContent.module.css';
 
 const CLAMP_LINES = 3;
 
@@ -42,10 +43,7 @@ export default function ExpandableContent({
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); setExpanded(v => !v); }}
-          style={{
-            marginTop: 2, padding: 0, fontSize: 11, fontWeight: 600,
-            color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer',
-          }}
+          className={styles.toggleBtn}
         >
           {expanded ? '간단히' : '자세히'}
         </button>

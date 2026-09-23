@@ -1,0 +1,27 @@
+.wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.inputWrap {
+  position: relative;
+  flex: 1;
+}
+.input {
+  width: 100%;
+}
+.input[data-has-value] {
+  padding-right: 32px;
+}
+.clearBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 16px;
+}

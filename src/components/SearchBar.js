@@ -1,22 +1,24 @@
 'use client';
+import styles from './SearchBar.module.css';
 
 export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
   return (
-    <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
-      <div style={{ position: 'relative', flex: 1 }}>
+    <div className={styles.wrap}>
+      <div className={styles.inputWrap}>
         <input
           type="text"
           value={value}
           onChange={e => onChange(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') onSubmit(value); }}
           placeholder={placeholder}
-          style={{ width: '100%', paddingRight: value ? 32 : undefined }}
+          className={styles.input}
+          data-has-value={!!value || undefined}
         />
         {value && (
           <button
             type="button"
             onClick={() => { onChange(''); onSubmit(''); }}
-            style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 16 }}
+            className={styles.clearBtn}
             aria-label="검색어 지우기"
           >×</button>
         )}

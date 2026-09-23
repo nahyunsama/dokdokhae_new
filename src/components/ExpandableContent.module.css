@@ -1,0 +1,15 @@
+/* Note: the content div's clamp style is computed from the
+   `expanded` state and `lines` prop (and merges any caller-supplied
+   `style`), so it stays inline. Only the static toggle button
+   moves here. */
+
+.toggleBtn {
+  margin-top: 2px;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
