@@ -8,6 +8,7 @@ import { dangerousHtml } from '@/lib/sanitize.client';
 import ContentLightbox from '@/components/ContentLightbox';
 import { bookColors } from '@/lib/bookColors';
 import { Pin, X, ArrowRight } from 'lucide-react';
+import styles from './page.module.css';
 
 function formatKDate(str) {
   if (!str) return '';
@@ -27,16 +28,7 @@ function formatKTime(str) {
 function MonthIssue({ featured }) {
   const c = bookColors(featured);
   if (!featured) {
-    return (
-      <div
-        style={{
-          width: 140, height: 199, flex: '0 0 auto',
-          background: 'var(--dd-accent-soft)',
-          border: '1px solid var(--dd-border)',
-          borderRadius: 2,
-        }}
-      />
-    );
+    return <div className={styles.coverPlaceholder} />;
   }
   if (featured.cover && /^https?:\/\//.test(featured.cover)) {
     // eslint-disable-next-line @next/next/no-img-element
@@ -44,48 +36,21 @@ function MonthIssue({ featured }) {
       <img
         src={featured.cover}
         alt={featured.title}
-        style={{
-          width: 140, height: 199, objectFit: 'cover', flex: '0 0 auto',
-          borderRadius: 2,
-          boxShadow: '0 8px 18px -8px rgba(0,0,0,.35)',
-        }}
+        className={styles.coverImg}
       />
     );
   }
   // SVG cover placeholder driven by hashed palette.
   return (
     <div
-      style={{
-        width: 140, height: 199, flex: '0 0 auto', position: 'relative',
-        background: `linear-gradient(160deg, ${c.cover} 0%, ${c.color} 60%, ${c.spine} 100%)`,
-        boxShadow: '0 1px 0 rgba(255,255,255,.25) inset, 0 8px 18px -8px rgba(0,0,0,.35)',
-        borderRadius: 2,
-      }}
+      className={styles.coverGradient}
+      style={{ background: `linear-gradient(160deg, ${c.cover} 0%, ${c.color} 60%, ${c.spine} 100%)` }}
     >
-      <div
-        style={{
-          position: 'absolute', inset: 6,
-          border: '1px solid rgba(255,255,255,.18)',
-          padding: 8, display: 'flex', flexDirection: 'column', gap: 4,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--dd-serif)',
-            fontSize: 15, lineHeight: 1.2,
-            color: 'rgba(255,255,255,.92)', fontWeight: 500,
-            letterSpacing: '-0.01em',
-            wordBreak: 'keep-all',
-            textShadow: '0 1px 2px rgba(0,0,0,.2)',
-          }}
-        >
+      <div className={styles.coverOverlay}>
+        <div className={styles.coverTitle}>
           {featured.title}
         </div>
-        <div
-          style={{
-            fontSize: 11, color: 'rgba(255,255,255,.65)', marginTop: 'auto',
-          }}
-        >
+        <div className={styles.coverAuthor}>
           {featured.author}
         </div>
       </div>
@@ -148,42 +113,20 @@ export default function HomePage() {
   const issueNo = String(new Date().getMonth() + 1).padStart(3, '0');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+    <div className={styles.page}>
       {/* ── Masthead ── */}
-      <section style={{ position: 'relative' }}>
-        <div
-          style={{
-            display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 12,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--dd-serif)', fontSize: 11,
-              color: 'var(--dd-accent)', letterSpacing: '0.3em',
-              textTransform: 'uppercase', whiteSpace: 'nowrap',
-            }}
-          >
+      <section className={styles.masthead}>
+        <div className={styles.mastheadRow}>
+          <span className={styles.mastheadLabel}>
             This Month · 이 달의 책
           </span>
-          <span style={{ flex: 1, height: 1, background: 'var(--dd-border)' }} />
-          <span
-            style={{
-              fontSize: 11, color: 'var(--dd-text-muted)',
-              fontFamily: 'var(--dd-serif)', letterSpacing: '0.15em',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <span className={styles.mastheadDivider} />
+          <span className={styles.issueNo}>
             NO. {issueNo}
           </span>
         </div>
 
-        <h1
-          style={{
-            fontFamily: 'var(--dd-serif)', fontSize: 'var(--dd-h1)',
-            fontWeight: 500, margin: 0, color: 'var(--dd-text)',
-            letterSpacing: '-0.03em', lineHeight: 1.02,
-          }}
-        >
+        <h1 className={styles.title}>
           {featured?.title ? (
             <>
               {(() => {
@@ -196,118 +139,69 @@ export default function HomePage() {
                   <>
                     {head}
                     <br />
-                    <em style={{ fontStyle: 'italic', color: 'var(--dd-accent)' }}>{tail || t}</em>
+                    <em className={styles.titleAccent}>{tail || t}</em>
                   </>
                 );
               })()}
             </>
           ) : (
-            <em style={{ fontStyle: 'italic', color: 'var(--dd-accent)' }}>독독한 독서</em>
+            <em className={styles.titleAccent}>독독한 독서</em>
           )}
         </h1>
 
         <div
-          className="dd-home-hero"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 160px) minmax(0, 1fr) minmax(0, 220px)',
-            gap: 36, marginTop: 28, alignItems: 'start',
-          }}
+          className={`dd-home-hero ${styles.heroGrid}`}
         >
           <MonthIssue featured={featured} />
 
-          <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                fontFamily: 'var(--dd-serif)', fontSize: 13,
-                color: 'var(--dd-text-muted)', letterSpacing: '0.08em',
-                marginBottom: 12,
-              }}
-            >
+          <div className={styles.bookInfoCol}>
+            <div className={styles.bookMeta}>
               {[featured?.author, featured?.genre, featured?.year]
                 .filter(Boolean)
                 .join(' · ') || '도서 정보 준비 중'}
             </div>
-            <p
-              style={{
-                fontFamily: 'var(--dd-serif)', fontSize: 15,
-                lineHeight: 1.65, color: 'var(--dd-text)',
-                margin: 0, letterSpacing: '-0.005em',
-              }}
-            >
+            <p className={styles.bookIntro}>
               {intro}
             </p>
             {featured?.id && (
               <button
                 type="button"
                 onClick={() => router.push(`/books/${featured.id}`)}
-                style={{
-                  marginTop: 22, padding: '10px 18px',
-                  background: 'transparent',
-                  border: '1px solid var(--dd-accent)',
-                  color: 'var(--dd-accent)', cursor: 'pointer',
-                  fontFamily: 'var(--dd-sans)', fontSize: 12,
-                  letterSpacing: '0.08em', borderRadius: 0,
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                }}
+                className={styles.bookPageBtn}
               >
                 도서 페이지 <ArrowRight size={12} />
               </button>
             )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className={styles.meetingCol}>
             {nextMeeting ? (
               <>
-                <div
-                  style={{
-                    padding: 18, background: 'var(--dd-accent)',
-                    color: 'var(--dd-surface)',
-                    display: 'flex', flexDirection: 'column', gap: 4,
-                  }}
-                >
-                  <div style={{ fontSize: 10, letterSpacing: '0.3em', opacity: 0.7 }}>
+                <div className={styles.meetingCard}>
+                  <div className={styles.meetingLabel}>
                     NEXT MEETING
                   </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--dd-serif)', fontSize: 36, fontWeight: 500,
-                      lineHeight: 1, letterSpacing: '-0.02em',
-                    }}
-                  >
+                  <div className={styles.meetingDday}>
                     {ddayLabel}
                   </div>
-                  <div style={{ fontSize: 11, opacity: 0.85, marginTop: 6 }}>
+                  <div className={styles.meetingDate}>
                     {formatKDate(nextMeeting.date)}
                   </div>
-                  <div style={{ fontSize: 11, opacity: 0.85 }}>
+                  <div className={styles.meetingTime}>
                     {formatKTime(nextMeeting.date)}
                     {nextMeeting.location ? ` · ${nextMeeting.location}` : ''}
                   </div>
                 </div>
                 <Link
                   href="/schedule"
-                  style={{
-                    padding: 12, background: 'var(--dd-surface)',
-                    border: '1px solid var(--dd-border)',
-                    color: 'var(--dd-text)', cursor: 'pointer', fontSize: 12,
-                    fontFamily: 'var(--dd-sans)', textAlign: 'left',
-                    textDecoration: 'none',
-                  }}
+                  className={styles.meetingLink}
                 >
-                  <span style={{ color: 'var(--dd-text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>다음 모임 <ArrowRight size={12} /></span>
+                  <span className={styles.meetingLinkLabel}>다음 모임 <ArrowRight size={12} /></span>
                   {nextMeeting.title || nextMeeting.label || '모임'}
                 </Link>
               </>
             ) : (
-              <div
-                style={{
-                  padding: 18, background: 'var(--dd-surface)',
-                  border: '1px solid var(--dd-border)',
-                  color: 'var(--dd-text-muted)', fontSize: 12,
-                  fontFamily: 'var(--dd-serif)', fontStyle: 'italic',
-                }}
-              >
+              <div className={styles.meetingEmpty}>
                 예정된 모임이 없어요.
               </div>
             )}
@@ -317,130 +211,64 @@ export default function HomePage() {
 
       {/* ── This week / 공지 ── */}
       <section
-        className="dd-home-bottom"
-        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36 }}
+        className={`dd-home-bottom ${styles.bottomGrid}`}
       >
         {activePassage ? (
           <Link
             href={`/featured/${activePassage.id}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            className={styles.passageLink}
           >
-            <article
-              style={{
-                padding: 24, background: 'var(--dd-surface)',
-                border: '1px solid var(--dd-border)', borderRadius: 2, cursor: 'pointer',
-                height: '100%', boxSizing: 'border-box',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <article className={styles.passageCard}>
+              <div className={styles.passageTop}>
                 <span className="tag">{activePassage.period === 'weekly' ? '이 주의 글' : '이 달의 글'}</span>
                 {activePassage.questions?.length > 0 && (
-                  <span style={{ fontSize: 11, color: 'var(--dd-text-muted)' }}>
+                  <span className={styles.passageQCount}>
                     질문 {activePassage.questions.length}개
                   </span>
                 )}
               </div>
-              <h3
-                style={{
-                  fontFamily: 'var(--dd-serif)', fontSize: 22, fontWeight: 500,
-                  margin: '0 0 10px',
-                  color: 'var(--dd-text)', letterSpacing: '-0.02em', lineHeight: 1.2,
-                }}
-              >
+              <h3 className={styles.passageTitle}>
                 {activePassage.bookTitle || '제목 없음'}
               </h3>
-              <p
-                style={{
-                  fontSize: 13, lineHeight: 1.7, color: 'var(--dd-text)',
-                  margin: 0, fontFamily: 'var(--dd-sans)',
-                  display: '-webkit-box', WebkitLineClamp: 4,
-                  WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                }}
-              >
+              <p className={styles.passageExcerpt}>
                 {activePassage.excerpt || activePassage.curatorNote || activePassage.passage || ''}
               </p>
-              <div
-                style={{
-                  display: 'flex', justifyContent: 'space-between',
-                  marginTop: 16, fontSize: 11, color: 'var(--dd-text-muted)',
-                }}
-              >
+              <div className={styles.passageFooter}>
                 <span>— {activePassage.bookTitle}{activePassage.bookAuthor ? ` / ${activePassage.bookAuthor}` : ''}</span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>읽기 <ArrowRight size={11} /></span>
+                <span className={styles.passageReadLink}>읽기 <ArrowRight size={11} /></span>
               </div>
             </article>
           </Link>
         ) : (
-          <div
-            style={{
-              padding: 24, background: 'var(--dd-surface)',
-              border: '1px solid var(--dd-border)', borderRadius: 2,
-              color: 'var(--dd-text-muted)', fontFamily: 'var(--dd-serif)',
-              fontStyle: 'italic',
-            }}
-          >
+          <div className={styles.passageEmpty}>
             이 주의 글이 아직 준비되지 않았어요.
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--dd-serif)', fontSize: 22, fontWeight: 500,
-              color: 'var(--dd-text)', letterSpacing: '-0.02em',
-              marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid var(--dd-border)',
-              display: 'flex', alignItems: 'baseline', gap: 12,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 14, color: 'var(--dd-text-muted)',
-                letterSpacing: '0.05em',
-              }}
-            >
+        <div className={styles.noticeCol}>
+          <h2 className={styles.noticeHeading}>
+            <span className={styles.noticeHeadingTag}>
               N.B.
             </span>
             공지사항
           </h2>
           {noticeList.length === 0 && (
-            <div
-              style={{
-                color: 'var(--dd-text-muted)', fontStyle: 'italic',
-                fontFamily: 'var(--dd-serif)', padding: '8px 0',
-              }}
-            >
+            <div className={styles.noticeEmpty}>
               등록된 공지가 없어요.
             </div>
           )}
-          {noticeList.map((n, i) => (
+          {noticeList.map((n) => (
             <Link
               key={n.id}
               href={`/notice/${n.id}`}
-              style={{
-                padding: '12px 0',
-                borderBottom: i < noticeList.length - 1 ? '1px dashed var(--dd-border)' : 'none',
-                display: 'flex', alignItems: 'baseline', gap: 12,
-                textDecoration: 'none', color: 'inherit',
-              }}
+              className={styles.noticeRow}
             >
-              {n.pinned && <Pin size={11} style={{ color: 'var(--dd-accent)' }} />}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: 13, color: 'var(--dd-text)',
-                    fontFamily: 'var(--dd-serif)', fontWeight: 500,
-                    letterSpacing: '-0.01em',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}
-                >
+              {n.pinned && <Pin size={11} className={styles.noticePinIcon} />}
+              <div className={styles.noticeRowBody}>
+                <div className={styles.noticeRowTitle}>
                   {n.title}
                 </div>
-                <div
-                  style={{
-                    fontSize: 10, color: 'var(--dd-text-muted)', marginTop: 2,
-                    letterSpacing: '0.05em',
-                  }}
-                >
+                <div className={styles.noticeRowDate}>
                   {n.createdAt?.toDate
                     ? `${n.createdAt.toDate().getFullYear()}.${n.createdAt.toDate().getMonth() + 1}.${n.createdAt.toDate().getDate()}`
                     : ''}
@@ -453,39 +281,14 @@ export default function HomePage() {
 
       {/* ── Quote band (only if featured book has quote/excerpt) ── */}
       {(featured?.quote || featured?.excerpt) && (
-        <section
-          style={{
-            padding: '32px 0',
-            borderTop: '1px solid var(--dd-border)',
-            borderBottom: '1px solid var(--dd-border)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            textAlign: 'center', gap: 12,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 10, color: 'var(--dd-text-muted)',
-              letterSpacing: '0.4em',
-            }}
-          >
+        <section className={styles.quoteBand}>
+          <span className={styles.quoteLabel}>
             QUOTE OF THE WEEK
           </span>
-          <p
-            style={{
-              fontFamily: 'var(--dd-serif)', fontStyle: 'italic',
-              fontSize: 26, color: 'var(--dd-text)',
-              margin: 0, lineHeight: 1.35, letterSpacing: '-0.015em',
-              maxWidth: 680,
-            }}
-          >
+          <p className={styles.quoteText}>
             “{featured.quote || featured.excerpt}”
           </p>
-          <span
-            style={{
-              fontSize: 11, color: 'var(--dd-text-muted)',
-              letterSpacing: '0.08em', fontFamily: 'var(--dd-serif)',
-            }}
-          >
+          <span className={styles.quoteAttribution}>
             — {featured.author}, 『{featured.title}』
           </span>
         </section>
@@ -495,38 +298,25 @@ export default function HomePage() {
       {noticeOpen && pinnedNotice && (
         <div className="modal-overlay" onClick={() => setNoticeOpen(false)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                marginBottom: 16,
-              }}
-            >
-              <h2
-                style={{
-                  fontFamily: 'var(--dd-serif)', fontSize: 18,
-                  color: 'var(--dd-accent)',
-                }}
-              >
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>
                 {pinnedNotice.title}
               </h2>
               <button
                 type="button"
                 onClick={() => setNoticeOpen(false)}
-                style={{
-                  background: 'none', border: 'none', fontSize: 20, cursor: 'pointer',
-                  color: 'var(--dd-text-muted)', display: 'flex', alignItems: 'center',
-                }}
+                className={styles.modalCloseBtn}
               >
                 <X size={20} />
               </button>
             </div>
-            <ContentLightbox contentClassName="notice-content" contentStyle={{ fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+            <ContentLightbox contentClassName={`notice-content ${styles.modalContent}`}>
               <div dangerouslySetInnerHTML={dangerousHtml(pinnedNotice.content)} />
             </ContentLightbox>
-            <div style={{ marginTop: 16, textAlign: 'right' }}>
+            <div className={styles.modalFooter}>
               <Link
                 href={`/notice/${pinnedNotice.id}`}
-                style={{ fontSize: 13, color: 'var(--dd-accent)', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: 3 }}
+                className={styles.modalViewAllLink}
                 onClick={() => setNoticeOpen(false)}
               >
                 전체 보기 <ArrowRight size={13} />
