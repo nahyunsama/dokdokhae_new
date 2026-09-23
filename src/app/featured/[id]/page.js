@@ -13,6 +13,7 @@ import { NICKNAME_TAKEN_MESSAGE } from '@/lib/nicknames';
 import ContentLightbox from '@/components/ContentLightbox';
 import ExpandableContent from '@/components/ExpandableContent';
 import { ArrowLeft, Calendar, CalendarDays, ScrollText, PenLine, Bot, MessageCircle, CornerDownRight } from 'lucide-react';
+import styles from './featured-detail.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -164,80 +165,79 @@ export default function FeaturedDetailPage({ params }) {
 
   return (
     <div>
-      <button onClick={() => router.push('/featured')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 13, marginBottom: 16, padding: 0 }}>
+      <button onClick={() => router.push('/featured')} className={styles.backBtn}>
         <ArrowLeft size={14} /> 목록으로
       </button>
 
       {/* 기간 배지 */}
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent2)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+      <div className={styles.periodBadge}>
         {passage.period === 'weekly' ? <><Calendar size={11} /> 이 주의 글</> : <><CalendarDays size={11} /> 이 달의 글</>} · {passage.periodKey}
       </div>
 
       {/* 발췌문 / 큐레이터 소개 */}
-      <div className="card" style={{ padding: 24, marginBottom: 16 }}>
+      <div className={`card ${styles.passageCard}`}>
         {passage.kind === 'public_domain' && passage.excerpt ? (
           <>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: 16, lineHeight: 2, color: 'var(--text)', whiteSpace: 'pre-line', marginBottom: 16 }}>
+            <p className={styles.excerptQuote}>
               "{passage.excerpt}"
             </p>
             {passage.curatorNote && (
-              <p style={{ fontSize: 14, lineHeight: 1.8, color: 'var(--muted)', whiteSpace: 'pre-line', marginBottom: 16, paddingLeft: 12, borderLeft: '2px solid var(--line)' }}>
+              <p className={styles.curatorNoteQuoted}>
                 {passage.curatorNote}
               </p>
             )}
-            <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-              <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--accent)', borderRadius: 10, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 3 }}><ScrollText size={10} /> 자유 이용</span>
-              <p style={{ fontSize: 13, fontWeight: 500, marginTop: 8 }}>{passage.bookTitle}</p>
-              {passage.bookAuthor && <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{passage.bookAuthor}</p>}
+            <div className={styles.metaFooter}>
+              <span className={styles.kindBadge}><ScrollText size={10} /> 자유 이용</span>
+              <p className={styles.bookTitleMeta}>{passage.bookTitle}</p>
+              {passage.bookAuthor && <p className={styles.bookAuthorMeta}>{passage.bookAuthor}</p>}
               {passage.sourceUrl && (
-                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4, wordBreak: 'break-all' }}>
-                  출처: <a href={passage.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{passage.sourceUrl}</a>
+                <p className={styles.sourceUrlText}>
+                  출처: <a href={passage.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.sourceUrlLink}>{passage.sourceUrl}</a>
                 </p>
               )}
-              {passage.source && <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{passage.source}</p>}
-              <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6, fontStyle: 'italic' }}>공표 후 보호기간 만료 저작물 — 자유롭게 이용 가능</p>
+              {passage.source && <p className={styles.sourceText}>{passage.source}</p>}
+              <p className={styles.licenseNote}>공표 후 보호기간 만료 저작물 — 자유롭게 이용 가능</p>
             </div>
           </>
         ) : passage.kind === 'curator_intro' ? (
           <>
             {passage.curatorNote && (
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: 15, lineHeight: 1.9, color: 'var(--text)', whiteSpace: 'pre-line', marginBottom: 16 }}>
+              <p className={styles.curatorNoteMain}>
                 {passage.curatorNote}
               </p>
             )}
             {passage.excerpt && (
-              <div style={{ background: 'var(--tag-bg)', borderLeft: '3px solid var(--accent2)', padding: '10px 14px', borderRadius: 6, marginBottom: 16 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: 14, lineHeight: 1.8, color: 'var(--text)', whiteSpace: 'pre-line' }}>
+              <div className={styles.quoteBox}>
+                <p className={styles.quoteBoxText}>
                   "{passage.excerpt}"
                 </p>
-                {passage.source && <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6 }}>— {passage.source}</p>}
+                {passage.source && <p className={styles.quoteBoxSource}>— {passage.source}</p>}
               </div>
             )}
-            <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-              <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--muted)', borderRadius: 10, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 3 }}><PenLine size={10} /> 큐레이터 소개</span>
-              {passage.aiGenerated?.curatorNote && <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 6, display: 'inline-flex', alignItems: 'center', gap: 3 }}><Bot size={10} /> AI 큐레이션</span>}
-              <p style={{ fontSize: 13, fontWeight: 500, marginTop: 8 }}>{passage.bookTitle}</p>
-              {passage.bookAuthor && <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{passage.bookAuthor}</p>}
-              <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6, fontStyle: 'italic' }}>이 글은 책에 대한 큐레이터의 소개이며, 책의 원문 발췌가 아닙니다.</p>
+            <div className={styles.metaFooter}>
+              <span className={styles.kindBadgeMuted}><PenLine size={10} /> 큐레이터 소개</span>
+              {passage.aiGenerated?.curatorNote && <span className={styles.aiBadge}><Bot size={10} /> AI 큐레이션</span>}
+              <p className={styles.bookTitleMeta}>{passage.bookTitle}</p>
+              {passage.bookAuthor && <p className={styles.bookAuthorMeta}>{passage.bookAuthor}</p>}
+              <p className={styles.licenseNote}>이 글은 책에 대한 큐레이터의 소개이며, 책의 원문 발췌가 아닙니다.</p>
             </div>
           </>
         ) : (
           <>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: 16, lineHeight: 2, color: 'var(--text)', whiteSpace: 'pre-line', marginBottom: 16 }}>
+            <p className={styles.excerptQuote}>
               "{passage.passage}"
             </p>
-            <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-              <p style={{ fontSize: 13, fontWeight: 500 }}>{passage.bookTitle}</p>
-              {passage.bookAuthor && <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{passage.bookAuthor}</p>}
-              {passage.source && <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>출처: {passage.source}</p>}
+            <div className={styles.metaFooter}>
+              <p className={styles.bookTitleMetaTight}>{passage.bookTitle}</p>
+              {passage.bookAuthor && <p className={styles.bookAuthorMeta}>{passage.bookAuthor}</p>}
+              {passage.source && <p className={styles.sourceUrlText}>출처: {passage.source}</p>}
             </div>
           </>
         )}
 
         {/* 공유 버튼 */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--line)' }}>
-          <button onClick={handleShare} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1.5px solid var(--line)', borderRadius: 20, background: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 13 }}>
+        <div className={styles.shareRow}>
+          <button onClick={handleShare} className={styles.shareBtn}>
             공유
           </button>
         </div>
@@ -245,13 +245,13 @@ export default function FeaturedDetailPage({ params }) {
 
       {/* 토론 질문 */}
       {passage.questions?.length > 0 && (
-        <div className="card" style={{ padding: 20, marginBottom: 16 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}><MessageCircle size={14} /> 함께 나눠볼 질문</h2>
-          <ol style={{ paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className={`card ${styles.questionsCard}`}>
+          <h2 className={styles.questionsTitle}><MessageCircle size={14} /> 함께 나눠볼 질문</h2>
+          <ol className={styles.questionsList}>
             {passage.questions.map((q, i) => (
-              <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: 18, color: 'var(--accent)', flexShrink: 0, lineHeight: 1.4 }}>{i + 1}.</span>
-                <span style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text)' }}>{q}</span>
+              <li key={i} className={styles.questionItem}>
+                <span className={styles.questionNum}>{i + 1}.</span>
+                <span className={styles.questionText}>{q}</span>
               </li>
             ))}
           </ol>
@@ -259,16 +259,16 @@ export default function FeaturedDetailPage({ params }) {
       )}
 
       {/* 댓글 */}
-      <div className="card" style={{ padding: 20 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--muted)', marginBottom: 14 }}>
+      <div className={`card ${styles.commentsCard}`}>
+        <h3 className={styles.commentsTitle}>
           댓글 {comments.length}개
         </h3>
 
         {/* 댓글 작성 */}
         {canComment ? (
-          <div style={{ marginBottom: 16 }}>
+          <div className={styles.composerWrap}>
             {!isMember && (
-              <div style={{ marginBottom: 8 }}>
+              <div className={styles.nicknameFieldWrap}>
                 <input
                   type="text"
                   placeholder={`닉네임 (${NICKNAME_MIN}~${NICKNAME_MAX}자) *`}
@@ -278,7 +278,7 @@ export default function FeaturedDetailPage({ params }) {
                     setAnonNicknameInput(e.target.value);
                     saveAnonNickname(e.target.value);
                   }}
-                  style={{ fontSize: 13 }}
+                  className={styles.nicknameInput}
                 />
               </div>
             )}
@@ -288,43 +288,42 @@ export default function FeaturedDetailPage({ params }) {
               placeholder="생각을 남겨주세요…"
               minHeight={120}
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-              <button onClick={() => addComment()} className="btn-sm"
-                style={{ background: 'var(--accent)', color: '#fff' }}>등록</button>
+            <div className={styles.composerActions}>
+              <button onClick={() => addComment()} className={`btn-sm ${styles.accentBtn}`}>등록</button>
             </div>
           </div>
         ) : (
-          <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 14 }}>
+          <p className={styles.pendingText}>
             댓글을 준비하는 중이에요…
           </p>
         )}
 
         {/* 댓글 목록 */}
         {topComments.length === 0 ? (
-          <p style={{ fontSize: 13, color: 'var(--muted)', textAlign: 'center', padding: '16px 0' }}>
+          <p className={styles.emptyCommentText}>
             첫 번째 댓글을 남겨보세요.
           </p>
         ) : (
           topComments.map(c => (
             <div key={c.id}>
               <div className="comment-item">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500 }}>{c.nickname}</span>
+                <div className={styles.commentHeadRow}>
+                  <span className={styles.commentNickname}>{c.nickname}</span>
                   {c.isAnonymous && (
-                    <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--muted)', borderRadius: 10, padding: '1px 7px' }}>비회원</span>
+                    <span className={styles.anonBadge}>비회원</span>
                   )}
-                  <span style={{ fontSize: 11, color: 'var(--muted)' }}>{formatDate(c.createdAt)}</span>
-                  <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+                  <span className={styles.commentDate}>{formatDate(c.createdAt)}</span>
+                  <div className={styles.commentActions}>
                     {canComment && (
                       <button onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
-                        style={{ fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>답글</button>
+                        className={styles.actionLink}>답글</button>
                     )}
                     {(effectiveUid === c.uid || isAdmin) && (
                       <>
                         <button onClick={() => { setEditingCommentId(c.id); setEditCommentText(c.content); }}
-                          style={{ fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>수정</button>
+                          className={styles.actionLink}>수정</button>
                         <button onClick={() => deleteComment(c.id)}
-                          style={{ fontSize: 11, color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>삭제</button>
+                          className={styles.actionLinkDanger}>삭제</button>
                       </>
                     )}
                   </div>
@@ -338,15 +337,14 @@ export default function FeaturedDetailPage({ params }) {
                       placeholder="내용을 수정해주세요…"
                       minHeight={100}
                     />
-                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
-                      <button onClick={() => editComment(c.id)} className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }}>완료</button>
+                    <div className={styles.composerActions}>
+                      <button onClick={() => editComment(c.id)} className={`btn-sm ${styles.accentBtn}`}>완료</button>
                       <button onClick={() => setEditingCommentId(null)} className="btn-sm btn-outline">취소</button>
                     </div>
                   </div>
                 ) : (
                   <ContentLightbox
-                    contentClassName="ql-editor ql-snow"
-                    contentStyle={{ fontSize: 14, lineHeight: 1.7, padding: 0, border: 'none' }}
+                    contentClassName={`ql-editor ql-snow ${styles.commentContent}`}
                   >
                     <ExpandableContent html={dangerousHtml(c.content)} />
                   </ContentLightbox>
@@ -354,13 +352,12 @@ export default function FeaturedDetailPage({ params }) {
 
                 {/* 답글 입력 */}
                 {replyTo === c.id && (
-                  <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  <div className={styles.replyInputRow}>
                     <input type="text" placeholder="답글을 입력해주세요…" value={replyText}
                       onChange={e => setReplyText(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && addComment(c.id)}
-                      style={{ flex: 1, fontSize: 13 }} />
-                    <button onClick={() => addComment(c.id)} className="btn-sm"
-                      style={{ background: 'var(--accent)', color: '#fff' }}>등록</button>
+                      className={styles.flexInput13} />
+                    <button onClick={() => addComment(c.id)} className={`btn-sm ${styles.accentBtn}`}>등록</button>
                   </div>
                 )}
               </div>
@@ -368,33 +365,33 @@ export default function FeaturedDetailPage({ params }) {
               {/* 대댓글 */}
               {getReplies(c.id).map(r => (
                 <div key={r.id} className="reply-item">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <CornerDownRight size={11} style={{ color: 'var(--muted)' }} />
-                    <span style={{ fontSize: 13, fontWeight: 500 }}>{r.nickname}</span>
+                  <div className={styles.commentHeadRow}>
+                    <CornerDownRight size={11} className={styles.replyIcon} />
+                    <span className={styles.commentNickname}>{r.nickname}</span>
                     {r.isAnonymous && (
-                      <span style={{ fontSize: 10, background: 'var(--tag-bg)', color: 'var(--muted)', borderRadius: 10, padding: '1px 7px' }}>비회원</span>
+                      <span className={styles.anonBadge}>비회원</span>
                     )}
-                    <span style={{ fontSize: 11, color: 'var(--muted)' }}>{formatDate(r.createdAt)}</span>
+                    <span className={styles.commentDate}>{formatDate(r.createdAt)}</span>
                     {(effectiveUid === r.uid || isAdmin) && (
-                      <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+                      <div className={styles.commentActions}>
                         <button onClick={() => { setEditingCommentId(r.id); setEditCommentText(r.content); }}
-                          style={{ fontSize: 11, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>수정</button>
+                          className={styles.actionLink}>수정</button>
                         <button onClick={() => deleteComment(r.id)}
-                          style={{ fontSize: 11, color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>삭제</button>
+                          className={styles.actionLinkDanger}>삭제</button>
                       </div>
                     )}
                   </div>
                   {editingCommentId === r.id ? (
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div className={styles.editRow}>
                       <input value={editCommentText} onChange={e => setEditCommentText(e.target.value)}
-                        style={{ flex: 1, fontSize: 13 }} onKeyDown={e => e.key === 'Enter' && editComment(r.id)} />
-                      <button onClick={() => editComment(r.id)} className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }}>완료</button>
+                        className={styles.flexInput13} onKeyDown={e => e.key === 'Enter' && editComment(r.id)} />
+                      <button onClick={() => editComment(r.id)} className={`btn-sm ${styles.accentBtn}`}>완료</button>
                       <button onClick={() => setEditingCommentId(null)} className="btn-sm btn-outline">취소</button>
                     </div>
                   ) : (
                     <ExpandableContent
                       text={r.content}
-                      style={{ fontSize: 13, lineHeight: 1.6 }}
+                      className={styles.replyText}
                     />
                   )}
                 </div>
