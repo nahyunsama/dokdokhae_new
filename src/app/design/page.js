@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button, Input, Chip, Tabs, Alert, Card } from '@/components/ui';
 import { Search, AlertTriangle, Lightbulb } from 'lucide-react';
+import styles from './design-showcase.module.css';
 
 const PREFIX_CHIPS = ['전체', '공지', '후기', '질문', '잡담'];
 
@@ -13,12 +14,12 @@ export default function DesignSystemShowcase() {
   const [input3, setInput3] = useState('');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className={styles.page}>
       <header>
-        <h1 style={{ fontSize: 'var(--ds-font-h1)', lineHeight: 'var(--ds-lh-h1)', fontWeight: 700, marginBottom: 4 }}>
+        <h1 className={styles.title}>
           dokdokhae Design System
         </h1>
-        <p style={{ fontSize: 'var(--ds-font-body2)', lineHeight: 'var(--ds-lh-body2)', color: 'var(--ds-color-text-secondary)' }}>
+        <p className={styles.subtitle}>
           UI primitives showcase — Button / Input / Chip / Tabs / Alert / Card
         </p>
       </header>
@@ -37,9 +38,9 @@ export default function DesignSystemShowcase() {
       />
 
       {tab === 'button' && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h2 style={{ fontSize: 'var(--ds-font-h2)', lineHeight: 'var(--ds-lh-h2)', fontWeight: 500 }}>Button</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Button</h2>
+          <div className={styles.row}>
             <Button onClick={() => alert('default click')}>기본 버튼</Button>
             <Button disabled>비활성</Button>
             <Button variant="disabled">disabled prop variant</Button>
@@ -48,8 +49,8 @@ export default function DesignSystemShowcase() {
       )}
 
       {tab === 'input' && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h2 style={{ fontSize: 'var(--ds-font-h2)', lineHeight: 'var(--ds-lh-h2)', fontWeight: 500 }}>Input</h2>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Input</h2>
           <Input
             variant="outlined"
             placeholder="outlined input"
@@ -73,12 +74,12 @@ export default function DesignSystemShowcase() {
       )}
 
       {tab === 'chip' && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h2 style={{ fontSize: 'var(--ds-font-h2)', lineHeight: 'var(--ds-lh-h2)', fontWeight: 500 }}>Chip</h2>
-          <p style={{ fontSize: 'var(--ds-font-caption)', color: 'var(--ds-color-text-secondary)' }}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Chip</h2>
+          <p className={styles.caption}>
             선택된 칩은 primary 컬러로 표시됩니다.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className={styles.chipRow}>
             {PREFIX_CHIPS.map((c) => (
               <Chip
                 key={c}
@@ -93,8 +94,8 @@ export default function DesignSystemShowcase() {
       )}
 
       {tab === 'alert' && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <h2 style={{ fontSize: 'var(--ds-font-h2)', lineHeight: 'var(--ds-lh-h2)', fontWeight: 500 }}>Alert</h2>
+        <section className={styles.sectionTight}>
+          <h2 className={styles.sectionTitle}>Alert</h2>
           <Alert variant="default" icon={<span>ℹ️</span>}>
             기본 알림 메시지입니다.
           </Alert>
@@ -108,9 +109,9 @@ export default function DesignSystemShowcase() {
       )}
 
       {tab === 'card' && (
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h2 style={{ fontSize: 'var(--ds-font-h2)', lineHeight: 'var(--ds-lh-h2)', fontWeight: 500 }}>Card</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Card</h2>
+          <div className={styles.cardGrid}>
             {[1, 2, 3].map((i) => (
               <Card key={i}>
                 <Card.Image />

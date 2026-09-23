@@ -1,0 +1,52 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.title {
+  font-size: var(--ds-font-h1);
+  line-height: var(--ds-lh-h1);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: var(--ds-font-body2);
+  line-height: var(--ds-lh-body2);
+  color: var(--ds-color-text-secondary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sectionTight {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sectionTitle {
+  font-size: var(--ds-font-h2);
+  line-height: var(--ds-lh-h2);
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.caption {
+  font-size: var(--ds-font-caption);
+  color: var(--ds-color-text-secondary);
+}
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
