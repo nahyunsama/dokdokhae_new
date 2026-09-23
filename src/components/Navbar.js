@@ -10,6 +10,7 @@ import {
   Home, ChevronDown, Settings, Menu, X, LogOut, ArrowUpRight,
   BookOpen, Star, NotebookPen, Calendar, MessageCircle, Megaphone,
 } from 'lucide-react';
+import styles from './Navbar.module.css';
 
 const READING = [
   { href: '/books',    label: '도서 목록', desc: '함께 읽은 책들의 서가',  icon: BookOpen },
@@ -45,9 +46,8 @@ function TopLink({ href, active, children }) {
   return (
     <Link
       href={href}
-      className="nav-toplink"
+      className={styles.topLink}
       data-active={active ? 'true' : undefined}
-      style={{ textDecoration: 'none' }}
     >
       {children}
     </Link>
@@ -81,28 +81,25 @@ function NavDropdown({ label, items, withExternal, pathname }) {
   return (
     <div
       ref={rootRef}
-      style={{ position: 'relative' }}
+      className={styles.dropdownRoot}
     >
       <button
         type="button"
-        className="nav-toplink"
+        className={`${styles.topLink} ${styles.dropdownTrigger}`}
         data-active={anyActive ? 'true' : undefined}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        style={{
-          appearance: 'none', background: 'transparent', border: 0, cursor: 'pointer',
-          display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--dd-sans)',
-        }}
       >
         {label}
         <ChevronDown
           size={13}
-          style={{ transition: 'transform .18s', transform: open ? 'rotate(180deg)' : 'none', opacity: 0.7 }}
+          className={styles.chevron}
+          data-open={open || undefined}
         />
       </button>
 
       {open && (
-        <div className="nav-drop-panel" role="menu">
+        <div className={styles.dropPanel} role="menu">
           {items.map((it) => {
             const Icon = it.icon;
             const active = isActiveFor(pathname, it.href);
@@ -111,14 +108,13 @@ function NavDropdown({ label, items, withExternal, pathname }) {
                 key={it.href}
                 href={it.href}
                 role="menuitem"
-                className="nav-drop-item"
+                className={styles.dropItem}
                 data-active={active ? 'true' : undefined}
-                style={{ textDecoration: 'none' }}
               >
-                <span className="nav-drop-icon"><Icon size={16} /></span>
-                <span style={{ minWidth: 0 }}>
-                  <span className="nav-drop-title">{it.label}</span>
-                  <span className="nav-drop-desc">{it.desc}</span>
+                <span className={styles.dropIcon}><Icon size={16} /></span>
+                <span className={styles.itemLabel}>
+                  <span className={styles.dropTitle}>{it.label}</span>
+                  <span className={styles.dropDesc}>{it.desc}</span>
                 </span>
               </Link>
             );
@@ -126,18 +122,17 @@ function NavDropdown({ label, items, withExternal, pathname }) {
 
           {withExternal && (
             <>
-              <div className="nav-drop-sep" />
+              <div className={styles.dropSep} />
               <button
                 type="button"
                 role="menuitem"
-                className="nav-drop-item"
+                className={`${styles.dropItem} ${styles.resetBtnFull}`}
                 onClick={openExternal}
-                style={{ appearance: 'none', background: 'transparent', border: 0, cursor: 'pointer', textAlign: 'left', width: '100%' }}
               >
-                <span className="nav-drop-icon"><ArrowUpRight size={16} /></span>
-                <span style={{ minWidth: 0 }}>
-                  <span className="nav-drop-title">{EXTERNAL.label}</span>
-                  <span className="nav-drop-desc">{EXTERNAL.desc}</span>
+                <span className={styles.dropIcon}><ArrowUpRight size={16} /></span>
+                <span className={styles.itemLabel}>
+                  <span className={styles.dropTitle}>{EXTERNAL.label}</span>
+                  <span className={styles.dropDesc}>{EXTERNAL.desc}</span>
                 </span>
               </button>
             </>
@@ -163,21 +158,20 @@ function SettingsPopover() {
   }, [open]);
 
   return (
-    <div ref={rootRef} style={{ position: 'relative' }}>
+    <div ref={rootRef} className={styles.dropdownRoot}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="화면 설정"
         aria-expanded={open}
-        className="nav-icon-btn"
+        className={styles.iconBtn}
         data-active={open ? 'true' : undefined}
       >
         <Settings size={18} />
       </button>
       {open && (
         <div
-          className="nav-drop-panel"
-          style={{ right: 0, left: 'auto', width: 240, padding: 0 }}
+          className={`${styles.dropPanel} ${styles.settingsPanel}`}
         >
           <ModeToggle />
         </div>
@@ -190,30 +184,12 @@ function SettingsPopover() {
 function AuthBlock({ user, profile, onLogout, onLogin }) {
   if (user && profile) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Link
-          href="/mypage"
-          style={{
-            display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none',
-            color: 'var(--dd-text)',
-          }}
-        >
-          <span
-            style={{
-              width: 26, height: 26, borderRadius: '50%',
-              background: 'var(--dd-accent)', color: 'var(--dd-surface)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 600, flexShrink: 0,
-            }}
-          >
+      <div className={styles.authWrap}>
+        <Link href="/mypage" className={styles.authLink}>
+          <span className={styles.avatar}>
             {profile.nickname?.slice(0, 1) || '·'}
           </span>
-          <span
-            style={{
-              fontSize: 12.5, maxWidth: 96, overflow: 'hidden',
-              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}
-          >
+          <span className={styles.nickname}>
             {profile.nickname}
           </span>
         </Link>
@@ -221,7 +197,7 @@ function AuthBlock({ user, profile, onLogout, onLogin }) {
           type="button"
           onClick={onLogout}
           aria-label="로그아웃"
-          className="nav-icon-btn"
+          className={styles.iconBtn}
           title="로그아웃"
         >
           <LogOut size={16} />
@@ -233,13 +209,7 @@ function AuthBlock({ user, profile, onLogout, onLogin }) {
     <button
       type="button"
       onClick={onLogin}
-      style={{
-        padding: '7px 14px',
-        background: 'var(--dd-accent)', color: 'var(--dd-surface)',
-        border: 0, borderRadius: 999,
-        fontSize: 12, fontFamily: 'var(--dd-sans)', letterSpacing: '0.04em',
-        cursor: 'pointer', whiteSpace: 'nowrap',
-      }}
+      className={styles.loginBtn}
     >
       로그인 / 가입
     </button>
@@ -264,16 +234,8 @@ export default function Navbar() {
   const closeMobile = () => { if (isMobile) setSidebar(false); };
 
   const Logo = (
-    <Link
-      href="/"
-      onClick={closeMobile}
-      style={{
-        textDecoration: 'none', fontFamily: 'var(--dd-serif)', fontSize: 17,
-        color: 'var(--dd-text)', letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-        flexShrink: 0,
-      }}
-    >
-      너 참 <em style={{ fontStyle: 'italic', color: 'var(--dd-accent)' }}>독독하다</em>
+    <Link href="/" onClick={closeMobile} className={styles.logo}>
+      너 참 <em className={styles.logoAccent}>독독하다</em>
     </Link>
   );
 
@@ -285,16 +247,16 @@ export default function Navbar() {
     ];
     return (
       <>
-        <nav className="navbar">
+        <nav className={styles.navbar}>
           {Logo}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className={styles.mobileTopRow}>
             {user && <NotificationBell />}
             <button
               type="button"
               onClick={toggleSidebar}
               aria-label={menuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={menuOpen}
-              className="nav-icon-btn"
+              className={styles.iconBtn}
               data-active={menuOpen ? 'true' : undefined}
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -303,10 +265,10 @@ export default function Navbar() {
         </nav>
 
         {menuOpen && (
-          <div className="nav-mobile-overlay" onClick={() => setSidebar(false)} aria-hidden="true" />
+          <div className={styles.mobileOverlay} onClick={() => setSidebar(false)} aria-hidden="true" />
         )}
 
-        <div className="nav-mobile-panel" data-open={menuOpen ? 'true' : 'false'} aria-hidden={!menuOpen}>
+        <div className={styles.mobilePanel} data-open={menuOpen ? 'true' : 'false'} aria-hidden={!menuOpen}>
           {flat.map((it) => {
             const Icon = it.icon;
             const active = isActiveFor(pathname, it.href);
@@ -315,11 +277,10 @@ export default function Navbar() {
                 key={it.href}
                 href={it.href}
                 onClick={closeMobile}
-                className="nav-mobile-item"
+                className={styles.mobileItem}
                 data-active={active ? 'true' : undefined}
-                style={{ textDecoration: 'none' }}
               >
-                {Icon && <Icon size={17} style={{ opacity: 0.8, flexShrink: 0 }} />}
+                {Icon && <Icon size={17} className={styles.mobileItemIcon} />}
                 {it.label}
               </Link>
             );
@@ -328,10 +289,9 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => { setSidebar(false); openExternal(); }}
-            className="nav-mobile-item"
-            style={{ appearance: 'none', background: 'transparent', border: 0, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+            className={`${styles.mobileItem} ${styles.resetBtnFull}`}
           >
-            <ArrowUpRight size={17} style={{ opacity: 0.8, flexShrink: 0 }} />
+            <ArrowUpRight size={17} className={styles.mobileItemIcon} />
             {EXTERNAL.label}
           </button>
 
@@ -339,51 +299,35 @@ export default function Navbar() {
             <Link
               href="/admin"
               onClick={closeMobile}
-              className="nav-mobile-item"
+              className={styles.mobileItem}
               data-active={isActiveFor(pathname, '/admin') ? 'true' : undefined}
-              style={{ textDecoration: 'none' }}
             >
-              <Settings size={17} style={{ opacity: 0.8, flexShrink: 0 }} />
+              <Settings size={17} className={styles.mobileItemIcon} />
               관리자
             </Link>
           )}
 
-          <div className="nav-drop-sep" style={{ margin: '8px 0' }} />
+          <div className={`${styles.dropSep} ${styles.sepMd}`} />
 
-          <div style={{ padding: '0 4px' }}>
+          <div className={styles.mobileProfileWrap}>
             {user && profile ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <div className={styles.mobileProfileRow}>
                 <button
                   type="button"
                   onClick={() => { router.push('/mypage'); closeMobile(); }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8, background: 'transparent',
-                    border: 0, cursor: 'pointer', color: 'var(--dd-text)', padding: 4, minWidth: 0,
-                  }}
+                  className={styles.mobileProfileBtn}
                 >
-                  <span
-                    style={{
-                      width: 28, height: 28, borderRadius: '50%',
-                      background: 'var(--dd-accent)', color: 'var(--dd-surface)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 600, flexShrink: 0,
-                    }}
-                  >
+                  <span className={styles.mobileAvatar}>
                     {profile.nickname?.slice(0, 1) || '·'}
                   </span>
-                  <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span className={styles.mobileNickname}>
                     {profile.nickname}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => { logout(); closeMobile(); }}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 5,
-                    background: 'transparent', border: '1px solid var(--dd-border)',
-                    borderRadius: 999, padding: '6px 12px', cursor: 'pointer',
-                    color: 'var(--dd-text-muted)', fontSize: 12, flexShrink: 0,
-                  }}
+                  className={styles.mobileLogoutBtn}
                 >
                   <LogOut size={14} /> 로그아웃
                 </button>
@@ -392,20 +336,14 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => { router.push('/login'); closeMobile(); }}
-                style={{
-                  width: '100%', padding: '10px 12px',
-                  background: 'var(--dd-accent)', color: 'var(--dd-surface)',
-                  border: 0, borderRadius: 8,
-                  fontSize: 13, fontFamily: 'var(--dd-sans)', letterSpacing: '0.04em',
-                  cursor: 'pointer',
-                }}
+                className={styles.mobileLoginBtn}
               >
                 로그인 / 가입
               </button>
             )}
           </div>
 
-          <div className="nav-drop-sep" style={{ margin: '8px 0 4px' }} />
+          <div className={`${styles.dropSep} ${styles.sepBottom}`} />
           <ModeToggle />
         </div>
       </>
@@ -414,10 +352,10 @@ export default function Navbar() {
 
   /* ── Desktop ─────────────────────────────────────────────── */
   return (
-    <nav className="navbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+    <nav className={styles.navbar}>
+      <div className={styles.desktopLeft}>
         {Logo}
-        <div style={{ width: 1, height: 20, background: 'var(--dd-border)', margin: '0 10px', flexShrink: 0 }} />
+        <div className={styles.divider} />
         <TopLink href="/" active={isActiveFor(pathname, '/')}>홈</TopLink>
         <NavDropdown label="읽기" items={READING} pathname={pathname} />
         <NavDropdown label="커뮤니티" items={COMMUNITY} pathname={pathname} withExternal />
@@ -426,7 +364,7 @@ export default function Navbar() {
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+      <div className={styles.desktopRight}>
         {user && <NotificationBell />}
         <SettingsPopover />
         <AuthBlock
