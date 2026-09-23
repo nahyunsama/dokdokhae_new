@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { dangerousHtml } from '@/lib/sanitize.client';
 import ContentLightbox from '@/components/ContentLightbox';
 import { ArrowLeft, Pin } from 'lucide-react';
+import styles from './notice-post.module.css';
 
 export default function NoticePostPage({ params }) {
   const { id } = use(params);
@@ -23,16 +24,16 @@ export default function NoticePostPage({ params }) {
 
   return (
     <div>
-      <Link href="/notice" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginBottom: 16, textDecoration: 'none' }}>
+      <Link href="/notice" className={styles.backLink}>
         <ArrowLeft size={14} /> 목록으로
       </Link>
-      <div className="card" style={{ padding: 20 }}>
-        {post.pinned && <div style={{ fontSize: 11, color: 'var(--accent2)', marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 3 }}><Pin size={11} /> 고정 공지</div>}
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>{post.title}</h1>
-        <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid var(--line)' }}>
+      <div className={`card ${styles.card}`}>
+        {post.pinned && <div className={styles.pinnedTag}><Pin size={11} /> 고정 공지</div>}
+        <h1 className={styles.title}>{post.title}</h1>
+        <div className={styles.meta}>
           {formatDate(post.createdAt)}
         </div>
-        <ContentLightbox contentClassName="notice-content" contentStyle={{ fontSize: 14, lineHeight: 1.8 }}>
+        <ContentLightbox contentClassName={`notice-content ${styles.body}`}>
           <div dangerouslySetInnerHTML={dangerousHtml(post.content)} />
         </ContentLightbox>
       </div>
