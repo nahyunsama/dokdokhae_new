@@ -13,6 +13,7 @@ import { sanitizeHtmlForStorage } from '@/lib/sanitize.client';
 import { authenticatedJsonFetch } from '@/lib/authenticatedFetch';
 import dynamic from 'next/dynamic';
 import { X, Pencil, Save } from 'lucide-react';
+import styles from './board.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -168,13 +169,14 @@ export default function BoardPage() {
       <div className="section-title">자유게시판</div>
 
       {/* 검색 + 말머리 필터 */}
-      <div style={{ marginBottom: 14 }}>
+      <div className={styles.searchFilterWrap}>
         {prefixes.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--card)', border: '1.5px solid var(--line)', borderRadius: 12, padding: '8px 14px', marginBottom: 8 }}>
+          <div className={styles.prefixFilterBar}>
             <select
               value={filterPrefix}
               onChange={e => setFilterPrefix(e.target.value)}
-              style={{ border: 'none', background: 'none', outline: 'none', fontSize: 13, color: filterPrefix ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', flexShrink: 0, width: 'auto', padding: 0 }}
+              className={styles.prefixSelect}
+              data-active={!!filterPrefix || undefined}
             >
               <option value="">전체 말머리</option>
               {prefixes.map(p => <option key={p.id} value={p.label}>{p.label}</option>)}
@@ -191,33 +193,33 @@ export default function BoardPage() {
 
       {/* 글쓰기 버튼 */}
       {user ? (
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary" style={{ marginBottom: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        <button onClick={() => setShowForm(!showForm)} className={`btn-primary ${styles.writeBtn}`}>
           {showForm ? <><X size={14} /> 닫기</> : <><Pencil size={14} /> 글쓰기</>}
         </button>
       ) : (
-        <div className="card" style={{ padding: 16, textAlign: 'center', marginBottom: 14 }}>
-          <p style={{ color: 'var(--muted)', marginBottom: 10, fontSize: 14 }}>로그인하면 글을 작성할 수 있어요.</p>
-          <button onClick={() => router.push('/login')} className="btn-primary" style={{ maxWidth: 160, margin: '0 auto' }}>로그인 / 가입</button>
+        <div className={`card ${styles.loginPrompt}`}>
+          <p className={styles.loginPromptText}>로그인하면 글을 작성할 수 있어요.</p>
+          <button onClick={() => router.push('/login')} className={`btn-primary ${styles.loginPromptBtn}`}>로그인 / 가입</button>
         </div>
       )}
 
       {/* 글쓰기 폼 */}
       {showForm && (
-        <div className="card" style={{ padding: 18, marginBottom: 16 }}>
+        <div className={`card ${styles.formCard}`}>
           {draft && (
-            <button onClick={loadDraft} style={{ fontSize: 12, color: 'var(--accent2)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={loadDraft} className={styles.draftBtn}>
               <Save size={12} /> 임시저장된 내용 불러오기
             </button>
           )}
           {/* 글머리 */}
           {prefixes.length > 0 && (
-            <select value={prefix} onChange={e => setPrefix(e.target.value)} style={{ marginBottom: 8 }}>
+            <select value={prefix} onChange={e => setPrefix(e.target.value)} className={styles.fieldGap}>
               <option value="">글머리 선택 (선택사항)</option>
               {prefixes.map(p => <option key={p.id} value={p.label}>{p.label}</option>)}
             </select>
           )}
-          <input type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} style={{ marginBottom: 8 }} />
-          <div style={{ marginBottom: 8 }}>
+          <input type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} className={styles.fieldGap} />
+          <div className={styles.fieldGap}>
             <QuillEditor
               value={content}
               onChange={setContent}
@@ -230,9 +232,9 @@ export default function BoardPage() {
               }}
             />
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={saveDraft} className="btn-sm btn-outline" style={{ flex: 1 }}>임시저장</button>
-            <button onClick={handleSubmit} disabled={submitting} className="btn-sm" style={{ flex: 2, background: 'var(--accent)', color: '#fff' }}>
+          <div className={styles.formActions}>
+            <button onClick={saveDraft} className={`btn-sm btn-outline ${styles.draftSubmitBtn}`}>임시저장</button>
+            <button onClick={handleSubmit} disabled={submitting} className={`btn-sm ${styles.postSubmitBtn}`}>
               {submitting ? '게시 중…' : '게시하기'}
             </button>
           </div>
@@ -240,7 +242,7 @@ export default function BoardPage() {
       )}
 
       {/* 보기 모드 선택 */}
-      <div role="radiogroup" aria-label="보기 모드" style={{ display: 'flex', justifyContent: 'flex-end', gap: 4, marginBottom: 10 }}>
+      <div role="radiogroup" aria-label="보기 모드" className={styles.viewModeBar}>
         {VIEW_MODES.map(m => (
           <button
             key={m.value}
@@ -248,13 +250,8 @@ export default function BoardPage() {
             role="radio"
             aria-checked={viewMode === m.value}
             onClick={() => setViewMode(m.value)}
-            className="btn-sm"
-            style={{
-              background: viewMode === m.value ? 'var(--accent)' : 'var(--tag-bg)',
-              color: viewMode === m.value ? '#fff' : 'var(--accent)',
-              border: '1px solid var(--line)',
-              fontWeight: viewMode === m.value ? 600 : 400,
-            }}
+            className={`btn-sm ${styles.viewModeBtn}`}
+            data-active={viewMode === m.value || undefined}
           >{m.label}</button>
         ))}
       </div>
@@ -264,22 +261,22 @@ export default function BoardPage() {
         <p className="empty-msg">게시글이 없어요.</p>
       ) : viewMode === 'board' ? (
         <div>
-          <div style={{ display: 'flex', gap: 10, padding: '6px 12px', fontSize: 11, color: 'var(--muted)', borderBottom: '1.5px solid var(--line)' }}>
-            <span style={{ width: 32, flexShrink: 0 }}>번호</span>
-            <span style={{ flex: 1 }}>제목</span>
-            <span style={{ width: 70, flexShrink: 0 }}>글쓴이</span>
-            <span style={{ width: 44, flexShrink: 0, textAlign: 'right' }}>날짜</span>
+          <div className={styles.boardHeaderRow}>
+            <span className={styles.colNum}>번호</span>
+            <span className={styles.colTitle}>제목</span>
+            <span className={styles.colAuthor}>글쓴이</span>
+            <span className={styles.colDate}>날짜</span>
           </div>
           {pageItems.map((p, i) => (
-            <Link key={p.id} href={`/board/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+            <Link key={p.id} href={`/board/${p.id}`} className={styles.rowLink}>
               <div className="post-row">
-                <span style={{ width: 32, flexShrink: 0, fontSize: 12, color: 'var(--muted)' }}>{filtered.length - (pageStart + i)}</span>
-                <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                  {p.prefix && <span style={{ fontSize: 11, background: 'var(--accent)', color: '#fff', padding: '1px 7px', borderRadius: 10, flexShrink: 0 }}>{p.prefix}</span>}
-                  <span style={{ fontSize: 14, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</span>
+                <span className={styles.rowNum}>{filtered.length - (pageStart + i)}</span>
+                <span className={styles.rowTitleWrap}>
+                  {p.prefix && <span className={styles.prefixTag}>{p.prefix}</span>}
+                  <span className={styles.rowTitleText}>{p.title}</span>
                 </span>
-                <span style={{ width: 70, flexShrink: 0, fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.nickname}</span>
-                <span style={{ width: 44, flexShrink: 0, fontSize: 11, color: 'var(--muted)', textAlign: 'right' }}>{p.createdAt?.toDate ? `${p.createdAt.toDate().getMonth()+1}/${p.createdAt.toDate().getDate()}` : ''}</span>
+                <span className={styles.rowAuthor}>{p.nickname}</span>
+                <span className={styles.rowDate}>{p.createdAt?.toDate ? `${p.createdAt.toDate().getMonth()+1}/${p.createdAt.toDate().getDate()}` : ''}</span>
               </div>
             </Link>
           ))}
@@ -289,20 +286,16 @@ export default function BoardPage() {
           {pageItems.map(p => {
             const thumb = extractFirstImage(p.content);
             return (
-              <Link key={p.id} href={`/board/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+              <Link key={p.id} href={`/board/${p.id}`} className={styles.rowLink}>
                 <div className="post-grid-card">
                   {thumb ? (
                     <img src={thumb} alt="" className="post-grid-thumb" />
                   ) : (
                     <div className="post-grid-thumb-empty">No Image</div>
                   )}
-                  <div style={{ padding: '8px 10px' }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 500, color: 'var(--text)',
-                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                      minHeight: '2.6em', lineHeight: '1.3em',
-                    }}>{p.title}</div>
-                    <div style={{ display: 'flex', gap: 8, fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>
+                  <div className={styles.photoCardBody}>
+                    <div className={styles.photoCardTitle}>{p.title}</div>
+                    <div className={styles.photoCardMeta}>
                       <span>{p.nickname}</span>
                       <span>{p.createdAt?.toDate ? `${p.createdAt.toDate().getMonth()+1}/${p.createdAt.toDate().getDate()}` : ''}</span>
                     </div>
@@ -314,13 +307,13 @@ export default function BoardPage() {
         </div>
       ) : (
         pageItems.map(p => (
-          <Link key={p.id} href={`/board/${p.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+          <Link key={p.id} href={`/board/${p.id}`} className={styles.rowLink}>
             <div className="post-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                {p.prefix && <span style={{ fontSize: 11, background: 'var(--accent)', color: '#fff', padding: '1px 7px', borderRadius: 10 }}>{p.prefix}</span>}
-                <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{p.title}</div>
+              <div className={styles.textCardHead}>
+                {p.prefix && <span className={styles.prefixTag}>{p.prefix}</span>}
+                <div className={styles.textCardTitle}>{p.title}</div>
               </div>
-              <div style={{ display: 'flex', gap: 10, fontSize: 11, color: 'var(--muted)' }}>
+              <div className={styles.textCardMeta}>
                 <span>{p.nickname}</span>
                 <span>{p.createdAt?.toDate ? `${p.createdAt.toDate().getMonth()+1}/${p.createdAt.toDate().getDate()}` : ''}</span>
               </div>
@@ -330,54 +323,44 @@ export default function BoardPage() {
       )}
 
       {filtered.length > 0 && totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, marginTop: 16, flexWrap: 'wrap' }}>
+        <div className={styles.paginationBar}>
           <button
             type="button"
             onClick={() => setCurrentPage(1)}
             disabled={safePage === 1}
-            className="btn-sm btn-outline"
+            className={`btn-sm btn-outline ${styles.pageBtn}`}
             aria-label="첫 페이지"
-            style={{ minWidth: 32 }}
           >«</button>
           <button
             type="button"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={safePage === 1}
-            className="btn-sm btn-outline"
+            className={`btn-sm btn-outline ${styles.pageBtn}`}
             aria-label="이전 페이지"
-            style={{ minWidth: 32 }}
           >‹</button>
           {visiblePages.map(n => (
             <button
               key={n}
               type="button"
               onClick={() => setCurrentPage(n)}
-              className="btn-sm"
+              className={`btn-sm ${styles.pageNumBtn}`}
               aria-current={n === safePage ? 'page' : undefined}
-              style={{
-                minWidth: 32,
-                background: n === safePage ? 'var(--accent)' : 'var(--tag-bg)',
-                color: n === safePage ? '#fff' : 'var(--accent)',
-                border: '1px solid var(--line)',
-                fontWeight: n === safePage ? 600 : 400,
-              }}
+              data-active={n === safePage || undefined}
             >{n}</button>
           ))}
           <button
             type="button"
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={safePage === totalPages}
-            className="btn-sm btn-outline"
+            className={`btn-sm btn-outline ${styles.pageBtn}`}
             aria-label="다음 페이지"
-            style={{ minWidth: 32 }}
           >›</button>
           <button
             type="button"
             onClick={() => setCurrentPage(totalPages)}
             disabled={safePage === totalPages}
-            className="btn-sm btn-outline"
+            className={`btn-sm btn-outline ${styles.pageBtn}`}
             aria-label="마지막 페이지"
-            style={{ minWidth: 32 }}
           >»</button>
         </div>
       )}

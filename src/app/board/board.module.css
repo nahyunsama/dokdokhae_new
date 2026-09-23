@@ -1,0 +1,236 @@
+.searchFilterWrap {
+  margin-bottom: 14px;
+}
+.prefixFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+}
+.prefixSelect {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  width: auto;
+  padding: 0;
+}
+.prefixSelect[data-active] {
+  color: var(--accent);
+}
+
+.writeBtn {
+  margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.loginPrompt {
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.loginPromptText {
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.loginPromptBtn {
+  max-width: 160px;
+  margin: 0 auto;
+}
+
+.formCard {
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.draftBtn {
+  font-size: 12px;
+  color: var(--accent2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fieldGap {
+  margin-bottom: 8px;
+}
+.formActions {
+  display: flex;
+  gap: 8px;
+}
+.draftSubmitBtn {
+  flex: 1;
+}
+.postSubmitBtn {
+  flex: 2;
+  background: var(--accent);
+  color: #fff;
+}
+
+.viewModeBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.viewModeBtn {
+  border: 1px solid var(--line);
+  background: var(--tag-bg);
+  color: var(--accent);
+  font-weight: 400;
+}
+.viewModeBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.boardHeaderRow {
+  display: flex;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  border-bottom: 1.5px solid var(--line);
+}
+.colNum {
+  width: 32px;
+  flex-shrink: 0;
+}
+.colTitle {
+  flex: 1;
+}
+.colAuthor {
+  width: 70px;
+  flex-shrink: 0;
+}
+.colDate {
+  width: 44px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.rowLink {
+  text-decoration: none;
+  display: block;
+}
+.rowNum {
+  width: 32px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.rowTitleWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.prefixTag {
+  font-size: 11px;
+  background: var(--accent);
+  color: #fff;
+  padding: 1px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.rowTitleText {
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rowAuthor {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rowDate {
+  width: 44px;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.photoCardBody {
+  padding: 8px 10px;
+}
+.photoCardTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+  line-height: 1.3em;
+}
+.photoCardMeta {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.textCardHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.textCardTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.textCardMeta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.paginationBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.pageBtn {
+  min-width: 32px;
+}
+.pageNumBtn {
+  min-width: 32px;
+  background: var(--tag-bg);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  font-weight: 400;
+}
+.pageNumBtn[data-active] {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
