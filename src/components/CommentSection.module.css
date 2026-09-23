@@ -1,0 +1,71 @@
+/* Formerly-inline styles from CommentSection.js.
+   .comment-item/.reply-item/.btn-sm/.btn-outline/.btn-ghost stay in
+   globals.css — src/app/featured/[id]/page.js also renders comments
+   with .comment-item/.reply-item. */
+
+.wrapper {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.loginHint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.composerRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: flex-start;
+}
+.replyRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  margin-left: 16px;
+  align-items: flex-start;
+}
+.editRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  align-items: flex-start;
+}
+.textarea {
+  min-height: 44px;
+  resize: vertical;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+.itemNickname {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.itemActions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.commentText {
+  font-size: 13px;
+  margin-top: 2px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
