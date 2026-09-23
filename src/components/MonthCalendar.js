@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import styles from './MonthCalendar.module.css';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -56,25 +57,25 @@ export default function MonthCalendar({ meetings = [], value = null, onChange })
   }
 
   return (
-    <div style={{ background: 'var(--card)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: 14, marginBottom: 14 }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 10 }}>
+    <div className={styles.card}>
+      <div className={styles.header}>
         <button type="button" className="btn-sm btn-outline" onClick={() => go(-1)} aria-label="이전 달">‹</button>
-        <div style={{ fontFamily:'var(--font-serif)', fontWeight:600, color:'var(--accent)' }}>
+        <div className={styles.title}>
           {view.y}년 {view.m + 1}월
         </div>
-        <div style={{ display:'flex', gap:4 }}>
+        <div className={styles.headerNav}>
           <button type="button" className="btn-sm btn-outline" onClick={goToday}>오늘</button>
           <button type="button" className="btn-sm btn-outline" onClick={() => go(1)} aria-label="다음 달">›</button>
         </div>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:2, marginBottom:4 }}>
+      <div className={styles.weekdayRow}>
         {WEEKDAYS.map(w => (
-          <div key={w} style={{ textAlign:'center', fontSize:11, color:'var(--muted)', padding:'4px 0' }}>{w}</div>
+          <div key={w} className={styles.weekday}>{w}</div>
         ))}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:2 }}>
+      <div className={styles.dayGrid}>
         {cells.map((d, i) => {
           if (!d) return <div key={i} />;
           const key = ymd(d);
@@ -82,26 +83,17 @@ export default function MonthCalendar({ meetings = [], value = null, onChange })
           const isToday = isSameDay(d, today);
           const isSelected = value && isSameDay(d, value);
           const dow = d.getDay();
-          const bg = isSelected ? 'var(--accent)' : hasEvent ? 'var(--accent2)' : 'transparent';
-          const color = (isSelected || hasEvent) ? '#fff' : (dow === 0 ? '#c0392b' : (dow === 6 ? '#2a6fb3' : 'var(--text)'));
           return (
             <button
               key={key}
               type="button"
               onClick={() => onChange?.(d)}
-              style={{
-                aspectRatio: '1 / 1',
-                padding: 0,
-                border: isToday ? '1.5px solid var(--accent2)' : '1px solid transparent',
-                borderRadius: 6,
-                background: bg,
-                color,
-                fontSize: 13,
-                fontWeight: hasEvent || isSelected ? 600 : 400,
-                cursor: 'pointer',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontFamily:'var(--font-sans)',
-              }}
+              className={styles.day}
+              data-today={isToday || undefined}
+              data-sun={dow === 0 || undefined}
+              data-sat={dow === 6 || undefined}
+              data-event={hasEvent || undefined}
+              data-selected={isSelected || undefined}
             >
               {d.getDate()}
             </button>
