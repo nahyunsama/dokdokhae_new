@@ -1,0 +1,43 @@
+/* Note: minHeight (per-call-site prop) and the image menu's
+   left/top (click position) are genuinely dynamic values and stay
+   as inline style — only their static neighbors move here. */
+
+.loadingPlaceholder {
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+}
+
+.container {
+  position: relative;
+}
+
+.hintBar {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-left: 1.5px solid var(--line);
+  border-right: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+  border-radius: 0 0 8px 8px;
+  background: var(--tag-bg);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.imageMenu {
+  position: absolute;
+  z-index: 50;
+  background: var(--card);
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  box-shadow: var(--shadow);
+}

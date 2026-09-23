@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import 'react-quill-new/dist/quill.snow.css';
 import { Lightbulb } from 'lucide-react';
+import styles from './QuillEditor.module.css';
 
 const SIZE_LIST = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'];
 
@@ -276,13 +277,14 @@ export default function QuillEditor({ value, onChange, placeholder, minHeight = 
   };
 
   if (!ReactQuill) {
-    return <div style={{ height: minHeight, background: 'var(--bg)', border: '1.5px solid var(--line)', borderRadius: 8 }} />;
+    return <div className={styles.loadingPlaceholder} style={{ height: minHeight }} />;
   }
 
   return (
     <div
       ref={containerRef}
-      style={{ position: 'relative', minHeight }}
+      className={styles.container}
+      style={{ minHeight }}
     >
       <ReactQuill
         ref={reactQuillRef}
@@ -293,15 +295,7 @@ export default function QuillEditor({ value, onChange, placeholder, minHeight = 
         style={{ minHeight }}
       />
       {onImageUpload && (
-        <div style={{
-          fontSize: 11, color: 'var(--muted)', padding: '6px 10px',
-          borderLeft: '1.5px solid var(--line)',
-          borderRight: '1.5px solid var(--line)',
-          borderBottom: '1.5px solid var(--line)',
-          borderRadius: '0 0 8px 8px',
-          background: 'var(--tag-bg)',
-          display: 'flex', alignItems: 'center', gap: 5,
-        }}>
+        <div className={styles.hintBar}>
           <Lightbulb size={12} /> 이미지를 본문에 클릭하면 크기(작게/중간/크게)와 삭제 메뉴가 표시됩니다.
         </div>
       )}
@@ -310,14 +304,10 @@ export default function QuillEditor({ value, onChange, placeholder, minHeight = 
         type="file"
         accept="image/*"
         onChange={onFileChosen}
-        style={{ display: 'none' }}
+        className={styles.hiddenInput}
       />
       {menu && (
-        <div style={{
-          position: 'absolute', left: menu.x, top: menu.y, zIndex: 50,
-          background: 'var(--card)', border: '1.5px solid var(--accent)', borderRadius: 8,
-          padding: 4, display: 'flex', gap: 4, boxShadow: 'var(--shadow)',
-        }}>
+        <div className={styles.imageMenu} style={{ left: menu.x, top: menu.y }}>
           <button type="button" className="btn-sm btn-outline" onClick={() => setSize('img-sm')}>작게</button>
           <button type="button" className="btn-sm btn-outline" onClick={() => setSize('img-md')}>중간</button>
           <button type="button" className="btn-sm btn-outline" onClick={() => setSize('img-lg')}>크게</button>
