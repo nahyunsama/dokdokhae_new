@@ -446,18 +446,7 @@ textarea { resize: vertical; min-height: 80px; font-family: var(--dd-serif); lin
   padding: 18px 20px;
   margin-bottom: 8px;
 }
-.rc-meta {
-  font-size: 12px;
-  color: var(--dd-text-muted);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-@media (max-width: 480px) {
-  .rc-meta-preview-hide-mobile { display: none; }
-  .rc-meta-book-title {
-    white-space: normal; overflow: visible; text-overflow: clip;
-    word-break: break-word;
-  }
-}
+/* .rc-meta*, .star-* moved to src/components/ReviewCard.module.css */
 .review-content {
   font-family: var(--dd-serif);
   font-size: 14px; line-height: 1.65;
@@ -544,8 +533,6 @@ textarea { resize: vertical; min-height: 80px; font-family: var(--dd-serif); lin
   border-left: 4px solid var(--dd-accent-soft);
   color: var(--dd-text-muted);
 }
-.star-filled { color: var(--dd-accent); }
-.star-empty { color: var(--dd-border); }
 
 /* ─────────────────────────────────────────────────────────── */
 /* ── Comments                                                ── */

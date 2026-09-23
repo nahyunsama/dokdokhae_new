@@ -1,0 +1,96 @@
+/* Moved from src/app/globals.css — .rc-meta*, .star-* are only used here.
+   .review-card, .review-content, .btn-sm/.btn-outline/.btn-danger stay
+   global since other pages/components share them. */
+
+.meta {
+  font-size: 12px;
+  color: var(--dd-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .metaPreviewHideMobile {
+    display: none;
+  }
+  .metaBookTitle {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+  }
+}
+
+.starFilled {
+  color: var(--dd-accent);
+}
+.starEmpty {
+  color: var(--dd-border);
+}
+
+/* ── Formerly-inline styles ──────────────────────────────────── */
+
+.starsRow {
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+}
+.starIcon {
+  display: inline-flex;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  gap: 8px;
+}
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.nickname {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.bookTitleMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.iconStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.expandArrow {
+  font-size: 14px;
+}
+
+.expandedBody {
+  margin-top: 12px;
+}
+.actionsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.likeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

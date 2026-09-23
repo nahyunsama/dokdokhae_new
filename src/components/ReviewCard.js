@@ -8,6 +8,7 @@ import ContentLightbox from '@/components/ContentLightbox';
 import CommentSection from '@/components/CommentSection';
 import LikeBurst from '@/components/LikeBurst';
 import { Star, BookOpen, Heart, MessageCircle } from 'lucide-react';
+import styles from './ReviewCard.module.css';
 
 const PREVIEW_LEN = 30;
 
@@ -30,9 +31,9 @@ export default function ReviewCard({
   const previewText = stripHtml(review.content || '').slice(0, PREVIEW_LEN);
 
   const stars = (n) => (
-    <span style={{ fontSize: 13, display: 'inline-flex', alignItems: 'center' }}>
+    <span className={styles.starsRow}>
       {[1,2,3,4,5].map(s => (
-        <span key={s} className={s <= (n||0) ? 'star-filled' : 'star-empty'} style={{ display: 'inline-flex' }}>
+        <span key={s} className={`${styles.starIcon} ${s <= (n||0) ? styles.starFilled : styles.starEmpty}`}>
           <Star size={13} fill={s <= (n||0) ? 'currentColor' : 'none'} />
         </span>
       ))}
@@ -42,40 +43,39 @@ export default function ReviewCard({
   return (
     <div className="review-card">
       <div
-        style={{ display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer', gap:8 }}
+        className={styles.headerRow}
         onClick={() => setExpanded(e => !e)}
       >
-        <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0, flex:1 }}>
-          <span style={{ fontSize:13, fontWeight:600, color:'var(--accent)', whiteSpace:'nowrap' }}>{review.nickname || '익명'}</span>
+        <div className={styles.headerLeft}>
+          <span className={styles.nickname}>{review.nickname || '익명'}</span>
           {stars(review.rating)}
           {showBookTitle && bookTitle && (
-            <span className="rc-meta rc-meta-book-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><BookOpen size={12} /> {bookTitle}</span>
+            <span className={`${styles.meta} ${styles.metaBookTitle} ${styles.bookTitleMeta}`}><BookOpen size={12} /> {bookTitle}</span>
           )}
           {!expanded && previewText && (
-            <span className={`rc-meta${showBookTitle ? ' rc-meta-preview-hide-mobile' : ''}`}>
+            <span className={`${styles.meta} ${showBookTitle ? styles.metaPreviewHideMobile : ''}`}>
               {previewText}
             </span>
           )}
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'var(--muted)' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Heart size={12} fill="currentColor" /> {likeCount}</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><MessageCircle size={12} /> {topComments.length}</span>
-          <span style={{ fontSize:14 }}>{expanded ? '▾' : '▸'}</span>
+        <div className={styles.headerRight}>
+          <span className={styles.iconStat}><Heart size={12} fill="currentColor" /> {likeCount}</span>
+          <span className={styles.iconStat}><MessageCircle size={12} /> {topComments.length}</span>
+          <span className={styles.expandArrow}>{expanded ? '▾' : '▸'}</span>
         </div>
       </div>
 
       {expanded && (
-        <div style={{ marginTop: 12 }}>
+        <div className={styles.expandedBody}>
           <ContentLightbox contentClassName="review-content">
             <div dangerouslySetInnerHTML={dangerousHtml(review.content || '')} />
           </ContentLightbox>
 
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginTop: 12 }}>
+          <div className={styles.actionsRow}>
             <button
               type="button"
-              className="btn-sm btn-outline"
+              className={`btn-sm btn-outline ${styles.likeBtn}`}
               onClick={(e) => { e.stopPropagation(); if (user) { toggleLike(); } else { alert('로그인이 필요해요.'); } }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
               <LikeBurst liked={liked} likeCount={likeCount} size={14} />
             </button>
