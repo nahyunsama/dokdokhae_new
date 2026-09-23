@@ -1,0 +1,91 @@
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+
+.postCard {
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.fieldGapSm {
+  margin-bottom: 8px;
+}
+.fieldGapMd {
+  margin-bottom: 10px;
+}
+.editActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.editSaveBtn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.postHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.prefixTag {
+  font-size: 11px;
+  background: var(--accent);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.postTitle {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.postMeta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.postBody {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.roundBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+.roundBtn[data-liked] {
+  border-color: var(--accent2);
+  background: #fff8f0;
+  color: var(--accent2);
+}
+
+.commentsCard {
+  padding: 20px;
+}

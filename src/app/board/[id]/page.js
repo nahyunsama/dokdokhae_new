@@ -15,6 +15,7 @@ import ContentLightbox from '@/components/ContentLightbox';
 import CommentSection from '@/components/CommentSection';
 import LikeBurst from '@/components/LikeBurst';
 import { ArrowLeft } from 'lucide-react';
+import styles from './board-post.module.css';
 
 const QuillEditor = dynamic(() => import('@/components/QuillEditor'), { ssr: false });
 
@@ -101,21 +102,21 @@ export default function BoardPostPage({ params }) {
 
   return (
     <div>
-      <Link href="/board" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted)', fontSize: 13, marginBottom: 16, textDecoration: 'none' }}>
+      <Link href="/board" className={styles.backLink}>
         <ArrowLeft size={14} /> 목록으로
       </Link>
 
       {/* 게시글 */}
-      <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+      <div className={`card ${styles.postCard}`}>
         {editing ? (
           <div>
             {prefixes.length > 0 && (
-              <select value={editPrefix} onChange={e => setEditPrefix(e.target.value)} style={{ marginBottom: 8 }}>
+              <select value={editPrefix} onChange={e => setEditPrefix(e.target.value)} className={styles.fieldGapSm}>
                 <option value="">글머리 선택 (선택사항)</option>
                 {prefixes.map(p => <option key={p.id} value={p.label}>{p.label}</option>)}
               </select>
             )}
-            <input value={editTitle} onChange={e => setEditTitle(e.target.value)} style={{ marginBottom: 10 }} />
+            <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className={styles.fieldGapMd} />
             <QuillEditor
               value={editContent}
               onChange={setEditContent}
@@ -127,34 +128,33 @@ export default function BoardPostPage({ params }) {
                 return getDownloadURL(r);
               }}
             />
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <div className={styles.editActions}>
               <button className="btn-sm btn-outline" onClick={() => setEditing(false)}>취소</button>
-              <button className="btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={handleEdit}>수정 완료</button>
+              <button className={`btn-sm ${styles.editSaveBtn}`} onClick={handleEdit}>수정 완료</button>
             </div>
           </div>
         ) : (
           <>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
-              {post.prefix && <span style={{ fontSize: 11, background: 'var(--accent)', color: '#fff', padding: '2px 8px', borderRadius: 10, flexShrink: 0 }}>{post.prefix}</span>}
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 19, fontWeight: 700, lineHeight: 1.4 }}>{post.title}</h1>
+            <div className={styles.postHead}>
+              {post.prefix && <span className={styles.prefixTag}>{post.prefix}</span>}
+              <h1 className={styles.postTitle}>{post.title}</h1>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 16, paddingBottom: 14, borderBottom: '1px solid var(--line)' }}>
+            <div className={styles.postMeta}>
               {post.nickname} · {formatDate(post.createdAt)}
               {post.updatedAt && <span> (수정됨)</span>}
             </div>
             <ContentLightbox
-              contentClassName="post-content"
-              contentStyle={{ fontSize: 14, lineHeight: 1.8 }}
+              contentClassName={`post-content ${styles.postBody}`}
             >
               <div dangerouslySetInnerHTML={dangerousHtml(post.content)} />
             </ContentLightbox>
 
             {/* 좋아요 + 액션 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 20, paddingTop: 14, borderTop: '1px solid var(--line)' }}>
-              <button onClick={handleToggleLike} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: `1.5px solid ${liked ? 'var(--accent2)' : 'var(--line)'}`, borderRadius: 20, background: liked ? '#fff8f0' : 'none', color: liked ? 'var(--accent2)' : 'var(--muted)', cursor: 'pointer', fontSize: 13 }}>
+            <div className={styles.actionsRow}>
+              <button onClick={handleToggleLike} className={styles.roundBtn} data-liked={liked || undefined}>
                 <LikeBurst liked={liked} likeCount={likeCount} size={14} />
               </button>
-              <button onClick={handleShare} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: '1.5px solid var(--line)', borderRadius: 20, background: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 13 }}>
+              <button onClick={handleShare} className={styles.roundBtn}>
                 공유
               </button>
               {canEdit && (
@@ -169,7 +169,7 @@ export default function BoardPostPage({ params }) {
       </div>
 
       {/* 댓글 */}
-      <div className="card" style={{ padding: 20 }}>
+      <div className={`card ${styles.commentsCard}`}>
         <CommentSection collectionName="board" postId={id} isAdmin={isAdmin} />
       </div>
     </div>
